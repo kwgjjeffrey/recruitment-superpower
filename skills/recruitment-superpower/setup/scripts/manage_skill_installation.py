@@ -488,7 +488,10 @@ def main():
         raise ValueError("The runtime port must be between 1 and 65535.")
     manifest_url = args.manifest_url or settings.get("channel", RELEASE_BASE + "/stable.json")
     receipt = installed_receipt(home)
-    if args.command in ("install", "upgrade") or (not receipt and args.command == "start"):
+    wanted = read_json(target / 'skill-project.json').get('componentVersions') if npx_managed_skill(target) else None
+    needs_alignment = wanted and (not receipt or receipt['componentVersions'] != wanted)
+    if (args.command in ("install", "upgrade") or (not receipt and args.command == "start")
+            or (args.command in ("start", "restart") and needs_alignment)):
         receipt = install(home, target, manifest_url, origin, port)
         settings = read_json(settings_path)
     if not receipt:
