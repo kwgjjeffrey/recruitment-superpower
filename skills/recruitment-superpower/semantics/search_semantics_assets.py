@@ -14,7 +14,9 @@ def search(query, kind=None, mode='hybrid'):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('query')
-    parser.add_argument('--kind', choices=['page', 'function', 'table', 'view', 'column'])
+    parser.add_argument('--type', '--kind', dest='kind', choices=['page', 'function', 'table', 'view', 'column'])
     parser.add_argument('--mode', choices=['keyword', 'vector', 'hybrid'], default='hybrid')
+    parser.add_argument('--format', choices=['yaml', 'json'], default='yaml')
     args = parser.parse_args()
-    raise SystemExit(display({'operation': 'semantics.search', 'query': args.query, 'kind': args.kind, 'mode': args.mode}))
+    raise SystemExit(display({'operation': 'semantics.search', 'query': args.query,
+                             'kind': args.kind, 'mode': args.mode}, output=args.format))

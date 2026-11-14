@@ -176,10 +176,14 @@ def request(action):
         return json.load(response)
 
 
-def display(action):
+def display(action, output='json'):
     try:
         result=request(action)
     except (OSError, ValueError, RuntimeError, subprocess.SubprocessError) as error:
         result={'ok':False,'error':{'message':str(error)}}
-    print(json.dumps(result,ensure_ascii=False))
+    if output == 'yaml':
+        from utils.yaml_output import render
+        print(render(result), end='')
+    else:
+        print(json.dumps(result,ensure_ascii=False))
     return 1 if result.get('ok') is False else 0

@@ -1,42 +1,48 @@
 ---
 name: recruitment-superpower
-description: Complete recruiting tasks by exploring authorized page, API and table assets with search/view, then invoking pages, calling functions or querying SQL through the local runtime.
+description: Operate recruiting pages using the Talent and Application workflows; inspect authorized page, API and table contracts when needed.
 ---
 
-Use the recruiting application's data assets to complete the user's request and report actual results. Every CLI ensures the local runtime is available and requests application authorization when needed. Read modules and run scripts through the registered entry `${RECRUITMENT_SKILL_DIR:-$HOME/.agents/skills/recruitment-superpower}`, using `${RECRUITMENT_PYTHON:-python3}`. Keep that entry in commands; never resolve its link or substitute a version-store path from earlier history.
+Complete the recruiting task through the user's application and report the actual result. Use the registered entry `${RECRUITMENT_SKILL_DIR:-$HOME/.agents/skills/recruitment-superpower}` and `${RECRUITMENT_PYTHON:-python3}` in every command. Never resolve that entry or substitute a release-store path from history.
 
 ## Happy path
 
-**Find an appropriate asset, then act.** Search for the required recruiting capability, view the matching definition, and choose its action: page → invoke; function → call; table → SQL query.
+### Choose the recruiting workflow
+
+Use this page map for ordinary recruiting tasks. Do not start by searching for familiar recruiting pages.
+
+| User's task | Entry asset | Continue to |
+|---|---|---|
+| Find a person; filter the talent pool | `recruitment/talent/list` | `recruitment/talent/detail` using the returned Talent ID |
+| Find applications; inspect recruiting progress | `recruitment/applications/list` | The same Talent detail, selecting the returned Application ID |
+| Inspect a job or its candidates | `recruitment/jobs/list` | `recruitment/jobs/detail` |
+| Work with leads | `recruitment/leads/list` | `recruitment/leads/detail` |
+| Review assigned recruiting tasks | `recruitment/tasks/list` | The linked candidate and Application |
+| Configure offices and meeting rooms | `recruitment/settings/offices` | Its declared actions |
+
+**Talent and Application share one detail page.** `recruitment/talent/detail` contains Resume and Notes for the Talent, plus Resume evaluation, Test, Interview and Offer for the selected Application. Interview arrangements and feedback belong together. Choose an Application to inspect its activities. Notes are shared Talent communication history, not a separate note history per Application.
+
+View the required page contract once to learn its actual parameters, return fields and actions. For a detail tab, follow the `semantic_ref` listed under the page's `views`. View that reference to get only that tab's contract. Execute named operations through its `actions`; actions are not additional pages or tabs. Do not read alternative assets or unrelated tabs after the required capability is clear.
 
 ```sh
-"${RECRUITMENT_PYTHON:-python3}" "${RECRUITMENT_SKILL_DIR:-$HOME/.agents/skills/recruitment-superpower}/semantics/search_semantics_assets.py" 'Talent'
 "${RECRUITMENT_PYTHON:-python3}" "${RECRUITMENT_SKILL_DIR:-$HOME/.agents/skills/recruitment-superpower}/semantics/view_semantics_asset.py" recruitment/talent/list
-"${RECRUITMENT_PYTHON:-python3}" "${RECRUITMENT_SKILL_DIR:-$HOME/.agents/skills/recruitment-superpower}/action/invoke_a_page.py" recruitment/talent/list --params '{"location":"London, UK","availability":"open"}'
+"${RECRUITMENT_PYTHON:-python3}" "${RECRUITMENT_SKILL_DIR:-$HOME/.agents/skills/recruitment-superpower}/action/invoke_a_page.py" recruitment/talent/list --params '{"q":"Benji Park"}'
 ```
 
-Search and view read the live Semantics service with the user's permissions. View describes parameter names, types and result shapes. Asset identity is its directory path. Each real page has its own asset, such as `recruitment/talent/list` or `recruitment/jobs/detail`. A page with tabs lists separate metadata assets for its views; follow the appropriate asset and invoke that explicit path.
+To inspect the available page map, view `recruitment --type page`. This lists pages with compact tab navigation; it does not mix in API/table assets or promote tabs to pages. Search is a fallback for capabilities not identified by the map or catalog, especially unfamiliar APIs and tables. Read [Semantics](semantics/SKILL.md) for these commands and [Actions](action/SKILL.md) for page/API/SQL execution. Search and view print YAML; Python imports return dictionaries.
 
-**The target asset is already identified.** Execute its action directly. Page actions always require an explicit asset path and run in the browser tab owning this conversation; they can navigate to a different asset. Omit `--params` to read the target page's actual state.
+### Act on an identified target
 
-```sh
-"${RECRUITMENT_PYTHON:-python3}" "${RECRUITMENT_SKILL_DIR:-$HOME/.agents/skills/recruitment-superpower}/action/invoke_a_page.py" recruitment/jobs/list --params '{"status":"open"}'
-"${RECRUITMENT_PYTHON:-python3}" "${RECRUITMENT_SKILL_DIR:-$HOME/.agents/skills/recruitment-superpower}/action/call_a_function.py" recruitment/api/talent/list --params '{"location":"London, UK"}'
-"${RECRUITMENT_PYTHON:-python3}" "${RECRUITMENT_SKILL_DIR:-$HOME/.agents/skills/recruitment-superpower}/action/run_sql.py" 'SELECT count(*) FROM "recruitment/tables/talent"'
-```
+When the target and its contract are already known, invoke it directly. Every page call still requires an explicit asset path. The conversation identifies the browser tab; the asset identifies the target page, which can differ from the page currently displayed. For “the current page”, read its identity from the conversation or `"$ATS_PAGE_BRIDGE/context.json"`, then pass that asset explicitly. Obtain current state through invoke, not from an old snapshot.
 
-For "the current page", use its asset from the conversation or read `"$ATS_PAGE_BRIDGE/context.json"`; still pass the asset explicitly. This context records page identity, view and an optional `editor` action when the user sent the message. If an editor is active, read its draft by passing that action with `submit: false`. Get live page state through the action. A null asset means that displayed page is not exposed for actions.
+A named operation uses the `action` key inside `--params`, for example `--params '{"action":"save"}'`. Include changed fields in the same object to fill and save once. `"submit":false` only opens/fills a draft. Use returned business identifiers to reopen and verify saved records. With no parameters, invoke reads the target's actual state. Do not repeat a successful read just to confirm the same read.
 
-Use [Semantics](semantics/SKILL.md) for discovery and [Actions](action/SKILL.md) for page/API/SQL calls. Python callers can import `invoke`, `call` or `run` from the corresponding scripts and use the returned dictionary directly.
-
-For a named page operation, put its name in the **`action` key inside `--params`**. For example, `--params '{"action":"save"}'` saves the current create/edit draft. Include changed fields in that same JSON object to fill and save in one operation. Add `"submit":false` only when you intend to inspect a draft before saving; it does not persist anything. After saving, use the returned business identifier to reopen the relevant detail page and verify the requested fields.
+Independent metadata requests may run in parallel. Page invocations on the same tab must run sequentially, including when grouped into one tool call. Never guess IDs, field names or action names.
 
 ## Prerequisite check
 
-The runtime automatically starts or installs a missing daemon. The first authorized operation may open the application's sign-in/connect page; complete authorization there. The daemon retains application credentials in its private SQLite database. Token refresh, Semantics access and business requests are handled by the daemon.
-
-Inside ATS, the runtime supplies the installed Skill path, Python interpreter and per-conversation channel. See [Setup](setup/SKILL.md) for installation, status, update, restart and recovery when the operating system or network prevents automatic startup.
+Every CLI ensures the local runtime is available and requests application authorization when necessary. The daemon manages application credentials, token refresh and authorized Semantics/API requests. Inside ATS it supplies the Skill entry, Python interpreter and per-conversation channel. Use [Setup](setup/SKILL.md) for installation, update, restart or recovery when automatic startup is blocked.
 
 ## Other outcomes
 
-`ok: false` is a failed operation. Read replies have `phase: observed` and actual `state`; executed actions have `phase: executed` and their persisted `result`. Read again to observe saved data. API/SQL results contain HTTP status and returned data. An unknown asset, invalid parameter or missing permission is an error. After a page timeout, read the explicit target's state before retrying. Keep the user's requested scope when choosing mutations; read each function's description and declared effect.
+`ok: false` is failure. Read replies have `phase: observed` and loaded `state`; writes have `phase: executed` and persisted `result`. An error is not an empty business result. After an interrupted or timed-out write, inspect actual state before retrying. Preserve the user's requested read/write scope. Unknown assets, invalid parameters and missing permissions require resolving the specific error, not reinstalling or switching browser tabs.
