@@ -1,0 +1,23 @@
+{
+  "bundleVersion": "0.2.7",
+  "sourceCommit": "e771962458f6fd6a23a4ba758167c214e5955157",
+  "manifestUrl": "https://recruitment.zhiyuanwangluo.online/downloads/recruitment-superpower/versions/0.2.7/manifest.json",
+  "skillArchiveSha256": "c41787f97befefbcbef58bd5be89bb478302e05e8b12ac97a7205f3f2eff5537",
+  "skillVersion": "0.2.6",
+  "files": {
+    "setup.sh": "2f1cf6a910ae6ed509dec069c86859bca75c4b3eeb0e0d5d0ccc27f4ea3c3a8e",
+    "skill-project.json": "c4f56dc963377175b368a66b3513e3fb2b96616d5eebd694c2fb4734709909f0",
+    "SKILL.md": "dae047d414fb841ba9b03c5f0851e7f7e49722df1657f211e9f778f05fc08c9e",
+    "setup/SKILL.md": "e4f50446687c0bd79e574cc02c2d83a4f117980222b68e8759f8fef3ffaa47c4",
+    "setup/scripts/manage_skill_installation.py": "aa6de25d7f08b99506ba863dbc17c915af47ba332d82010d55242444ba473266",
+    "utils/runtime_client.py": "edd1c7c6d3f22f971dd825f337de92e792cb41b4ca449ef70af94c1724027403",
+    "release/SKILL.md": "0d7674a907bf970567bf6c8fe8e49c2bbef4dd8bd552750823c0ed0c259f4e8a",
+    "semantics/view_semantics_asset.py": "c273ed917dc1d97e6a05a2005acc76e7c32614d34d74905163e95433e9779e5c",
+    "semantics/search_semantics_assets.py": "6ebfbfa656941a8350470a871a0ffba68d162c2b2537b7098d15d9ae421b8efa",
+    "semantics/SKILL.md": "5a73c1729378e96598e09eb6f3e4fe08101c05e2486e2b89b0d41eadc0fba573",
+    "action/run_sql.py": "3e97c8d9443c59548c7163f7a2a2d7f601941bebf1b881b6080516c0d5ad9d59",
+    "action/invoke_a_page.py": "745f4c1cfbf6c08268b0ab536771ffa095ec0dbdf4c982d9865380d73aa8ba5e",
+    "action/SKILL.md": "54638bb87a2e319937ca79d302017fe35cb02b88fc358a8f4119aa193c2cfd60",
+    "action/call_a_function.py": "ba20f1ca7fdb294446b26e27d285fcdf39448a105b36e85dfdf49c2d99595d0a"
+  }
+}

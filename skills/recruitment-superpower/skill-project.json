@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "name": "recruitment-superpower",
+  "version": "0.2.6",
+  "sourceDirectory": "skill/recruitment-superpower",
+  "releaseChannel": "https://recruitment.zhiyuanwangluo.online/downloads/recruitment-superpower/stable.json",
+  "artifactPaths": [
+    "SKILL.md",
+    "skill-project.json",
+    "setup.sh",
+    "setup",
+    "semantics",
+    "action",
+    "utils",
+    "release/SKILL.md"
+  ],
+  "componentVersions": {
+    "skill": "0.2.6",
+    "runtime": "0.2.4"
+  },
+  "sourceRepository": "https://github.com/kwgjjeffrey/recruitment-superpower"
+}
