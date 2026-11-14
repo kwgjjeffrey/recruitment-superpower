@@ -1,25 +1,28 @@
 # Semantics
 
-Inspect the authorized live catalog through the local runtime. For ordinary recruiting pages, choose the Talent/Application workflow from the root Skill's page map. Search is needed only when the target capability cannot be identified from that map or a directory listing.
+Use the root Skill's Talent/Application page map for ordinary recruiting work. Inspect the authorized live contract through the local runtime; search is fallback discovery.
 
-## View a catalog or contract
+## View pages and their sections
 
 ```sh
 "${RECRUITMENT_PYTHON:-python3}" "${RECRUITMENT_SKILL_DIR:-$HOME/.agents/skills/recruitment-superpower}/semantics/view_semantics_asset.py" recruitment --type page
-"${RECRUITMENT_PYTHON:-python3}" "${RECRUITMENT_SKILL_DIR:-$HOME/.agents/skills/recruitment-superpower}/semantics/view_semantics_asset.py" recruitment/talent/detail
-"${RECRUITMENT_PYTHON:-python3}" "${RECRUITMENT_SKILL_DIR:-$HOME/.agents/skills/recruitment-superpower}/semantics/view_semantics_asset.py" recruitment/talent/detail/test
+"${RECRUITMENT_PYTHON:-python3}" "${RECRUITMENT_SKILL_DIR:-$HOME/.agents/skills/recruitment-superpower}/semantics/view_semantics_asset.py" recruitment/applications/detail --section test
 ```
 
-A directory returns `entities`: asset identity, type, description and compact tab references for pages. `--type page|view|function|table` filters its entries. Page indexes list tab `semantic_ref` values and descriptions. A child view returns `type: view`, its `semantic_ref`, a compact `parent`, and its own `view` definition containing parameters, observations and actions. Use the exact `semantic_ref` as the invoke target; no parent fetch is needed merely to obtain its address. API and table directories are `recruitment/api` and `recruitment/tables`.
+A directory returns `entities`: page addresses and descriptions, with their sections and form links. A section is a parameter of its owning page, not a separately addressed asset. Talent detail has Resume and Notes. Application detail has Resume and its recruiting activities. `--section` narrows the metadata returned for inspection; when operating the page, put `section` inside invoke's `--params`.
 
-`--show summary` is the default consumer contract. `--show full` reads the complete authoritative metadata, including invocation declarations, when diagnosing a binding. `--show columns` reads table columns. The default output is YAML; `--format json` is available for programs. Python `view(asset_path, show='summary', type_=None)` returns a dictionary without printing.
+Page input descriptions explain how to supply values. `returns` maps actual result paths to their business meanings, without output types or JSON Schema wrappers. The actual invoke reply remains the source of truth. `items[].education[].school`, for example, means each displayed candidate's schools. IDs are navigation/edit locators only where needed.
+
+When a parameter has dynamic choices, its `choices` instruction tells you to invoke that page without saving and read the specified `state.options` collection. Each entry has a displayed label and an assignable value. Use the same page/record identity when retrieving choices and filling them; a bare browser-state path is not a data-source API.
+
+Follow `forms[].asset_path` to inspect and open a writable form. Fill it without `action` to inspect a draft; add `action: save` to persist. Inline operations such as changing the current stage remain named page actions.
+
+`--show full` reads the whole authoritative metadata file, including invocation bindings, for diagnostics. Output defaults to YAML; `--format json` is optional for programs. Python `view(asset_path, show='summary', type_=None, section=None)` returns a dictionary. No catalog snapshot is bundled in the Skill.
 
 ## Search an unfamiliar capability
 
 ```sh
-"${RECRUITMENT_PYTHON:-python3}" "${RECRUITMENT_SKILL_DIR:-$HOME/.agents/skills/recruitment-superpower}/semantics/search_semantics_assets.py" 'interview scheduling' --type view --mode keyword
+"${RECRUITMENT_PYTHON:-python3}" "${RECRUITMENT_SKILL_DIR:-$HOME/.agents/skills/recruitment-superpower}/semantics/search_semantics_assets.py" 'interview scheduling' --type page --mode keyword
 ```
 
-Search returns `query`, effective `mode`, `count` and `results`. Each result contains its type, identity, description and score; a view's `semantic_ref` identifies that tab directly. `--type` selects page, view, function, table or column (`--kind` remains an alias). `--mode keyword|hybrid|vector` selects retrieval mode; unavailable embeddings are reported as keyword mode. Inspect the matching definition, then act. Do not load every sibling tab or infer an API endpoint.
-
-Discovery reads the live independent service, never a packaged catalog snapshot. Every command shares daemon startup and application authorization; [Setup](../setup/SKILL.md) covers manual recovery.
+Search returns addresses, types, descriptions and scores. Inspect the matching page/API/table before acting. Setup and authorization are automatic; [Setup](../setup/SKILL.md) covers recovery.

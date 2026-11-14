@@ -11,7 +11,7 @@ def render(value):
     # Preserve every value. Put routing identity before the contract it describes.
     order = ('query', 'mode', 'count', 'entities', 'results', 'type', 'asset_path',
              'semantic_ref', 'display_name', 'description', 'parent', 'default_view',
-             'params', 'requires', 'views', 'view', 'returns', 'actions', 'columns',
+             'params', 'requires', 'sections', 'forms', 'returns', 'actions', 'columns',
              'ok', 'error', 'revision')
     if isinstance(value, dict):
         value = {**{key: value[key] for key in order if key in value},

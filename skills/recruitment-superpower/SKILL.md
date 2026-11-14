@@ -14,22 +14,22 @@ Use this page map for ordinary recruiting tasks. Do not start by searching for f
 | User's task | Entry asset | Continue to |
 |---|---|---|
 | Find a person; filter the talent pool | `recruitment/talent/list` | `recruitment/talent/detail` using the returned Talent ID |
-| Find applications; inspect recruiting progress | `recruitment/applications/list` | The same Talent detail, selecting the returned Application ID |
+| Find applications; inspect recruiting progress | `recruitment/applications/list` | `recruitment/applications/detail` with the returned Application and Talent IDs |
 | Inspect a job or its candidates | `recruitment/jobs/list` | `recruitment/jobs/detail` |
 | Work with leads | `recruitment/leads/list` | `recruitment/leads/detail` |
 | Review assigned recruiting tasks | `recruitment/tasks/list` | The linked candidate and Application |
 | Configure offices and meeting rooms | `recruitment/settings/offices` | Its declared actions |
 
-**Talent and Application share one detail page.** `recruitment/talent/detail` contains Resume and Notes for the Talent, plus Resume evaluation, Test, Interview and Offer for the selected Application. Interview arrangements and feedback belong together. Choose an Application to inspect its activities. Notes are shared Talent communication history, not a separate note history per Application.
+**Talent and Application share the visible detail interface, with distinct business page identities.** `recruitment/talent/detail` owns the person's resume, shared Notes and application choices. `recruitment/applications/detail` owns the selected job's stage, resume evaluation, test, interview and offer. Application detail needs both `id` (Talent ID) and `applicationId`; obtain them from the list or the Talent's application choices. Notes always belong to the Talent.
 
-View the required page contract once to learn its actual parameters, return fields and actions. For a detail tab, follow the `semantic_ref` listed under the page's `views`. View that reference to get only that tab's contract. Execute named operations through its `actions`; actions are not additional pages or tabs. Do not read alternative assets or unrelated tabs after the required capability is clear.
+Select a displayed section with the page parameter `section`, such as `section: test`. A section is not an asset and has no separate address. Read the page contract, or use `view ... --section test` to inspect only that section's parameters and field meanings. Follow its `forms[].asset_path` for a writable form page; do not construct form addresses. On a form page, filling parameters opens/fills the visible draft, and `action: save` submits it. Use an activity record's ID only to reopen that particular record for editing; do not confuse it with the Application ID.
 
 ```sh
 "${RECRUITMENT_PYTHON:-python3}" "${RECRUITMENT_SKILL_DIR:-$HOME/.agents/skills/recruitment-superpower}/semantics/view_semantics_asset.py" recruitment/talent/list
 "${RECRUITMENT_PYTHON:-python3}" "${RECRUITMENT_SKILL_DIR:-$HOME/.agents/skills/recruitment-superpower}/action/invoke_a_page.py" recruitment/talent/list --params '{"q":"Benji Park"}'
 ```
 
-To inspect the available page map, view `recruitment --type page`. This lists pages with compact tab navigation; it does not mix in API/table assets or promote tabs to pages. Search is a fallback for capabilities not identified by the map or catalog, especially unfamiliar APIs and tables. Read [Semantics](semantics/SKILL.md) for these commands and [Actions](action/SKILL.md) for page/API/SQL execution. Search and view print YAML; Python imports return dictionaries.
+To inspect the available page map, view `recruitment --type page`. It lists pages, their sections and linked form pages. Search is a fallback for capabilities not identified by the map or catalog, especially unfamiliar APIs and tables. Read [Semantics](semantics/SKILL.md) for these commands and [Actions](action/SKILL.md) for page/API/SQL execution. Search and view print YAML; Python imports return dictionaries.
 
 ### Act on an identified target
 
