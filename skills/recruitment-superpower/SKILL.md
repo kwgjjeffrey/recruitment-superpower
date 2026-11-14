@@ -39,6 +39,8 @@ A named operation uses the `action` key inside `--params`, for example `--params
 
 Independent metadata requests may run in parallel. Page invocations on the same tab must run sequentially, including when grouped into one tool call. Never guess IDs, field names or action names.
 
+Use a short, evidence-complete path. Read page context only to resolve a request about the current page or draft; a task naming another object does not need it. Search when the asset is unknown, then read only the definitions needed for the task and reuse them within this conversation. An edit page already exposes its original values; a separate detail visit before editing usually adds no information. Combine known fields and the action in one request. Open a draft first only when the user requests review or you need its currently loaded choices. Use actual returned state as evidence, and perform the extra leave/reopen checks the user explicitly requested. Do not replace required identity checks, field preservation or post-write verification with a shorter-looking command.
+
 ## Prerequisite check
 
 Every CLI ensures the local runtime is available and requests application authorization when necessary. The daemon manages application credentials, token refresh and authorized Semantics/API requests. Inside ATS it supplies the Skill entry, Python interpreter and per-conversation channel. Use [Setup](setup/SKILL.md) for installation, update, restart or recovery when automatic startup is blocked.

@@ -23,6 +23,8 @@ Page `actions` are operations, not views. Supply action fields as flat keys. Omi
 
 `phase: observed` describes actual page/draft state and optional `feedback`. `phase: executed` contains `result`, never a before-action state. Invoke the target page again to read persistence. Save actions may navigate as the same human button does. If the original tab is disconnected, reconnect it before retrying; another tab is never selected automatically.
 
+Reuse a current observation instead of reading the same state twice. A filter-change reply already contains the loaded rows for those filters; another identical read is useful only when it resolves uncertainty. On create/edit pages, read original values directly there. When a named action has all required fields and known choices, submit them together instead of opening and rereading a preview. For an additional activity, explicitly use the metadata's create value for its record identifier; a populated current editor may otherwise refer to an existing record.
+
 ## Function
 
 ```sh

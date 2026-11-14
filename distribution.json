@@ -1,13 +1,13 @@
 {
-  "bundleVersion": "0.2.9",
-  "sourceCommit": "6c0b879b4ffead8304d01024b6e9e5a8133c2a6e",
-  "manifestUrl": "https://recruitment.zhiyuanwangluo.online/downloads/recruitment-superpower/versions/0.2.9/manifest.json",
-  "skillArchiveSha256": "3692401a25138aca32af3a67a5b07af36fd0b39f6a82fa0154dbdf491bfad7e6",
-  "skillVersion": "0.2.8",
+  "bundleVersion": "0.2.10",
+  "sourceCommit": "720a0058fb8732d289dabeb072bc6458c13b1c5d",
+  "manifestUrl": "https://recruitment.zhiyuanwangluo.online/downloads/recruitment-superpower/versions/0.2.10/manifest.json",
+  "skillArchiveSha256": "ed0bd5fcb1db3b26d91c671c38c0d503e2fa1b7844f8a07aa1c7b5975170b192",
+  "skillVersion": "0.2.9",
   "files": {
     "setup.sh": "2f1cf6a910ae6ed509dec069c86859bca75c4b3eeb0e0d5d0ccc27f4ea3c3a8e",
-    "skill-project.json": "4e5141da904dc96b0ca63d2c6c9203af871337859a21478bf373265455b23f74",
-    "SKILL.md": "5b433c73a530d7dcd02fdcc589feb276c62e6016f24d5483435be2ae3c5ffad9",
+    "skill-project.json": "74bc3dab73ed80e08efb2ffb2f32cc6cc1ae4741f11548bbbd59f9f49d467252",
+    "SKILL.md": "dec664039a934586333aa5c242bb02d4aaa5b2fa2a8d1a2191ca601f7937d776",
     "setup/SKILL.md": "e4f50446687c0bd79e574cc02c2d83a4f117980222b68e8759f8fef3ffaa47c4",
     "setup/scripts/manage_skill_installation.py": "d4662a24883bdc4fc6d1d7309ecb439833cffb5f42d0dc1b446e6486eb3c79be",
     "utils/runtime_client.py": "99be4ad71d94961d1b755b7be0ee1ba5d8899bf1a8efaf688c114b01204d006a",
@@ -37,7 +37,7 @@
     "semantics/SKILL.md": "31382fc3bd5c1b3dfaec6464064b8d350f2de76a9ef98a64958ddc7fb77f6f4d",
     "action/run_sql.py": "3e97c8d9443c59548c7163f7a2a2d7f601941bebf1b881b6080516c0d5ad9d59",
     "action/invoke_a_page.py": "745f4c1cfbf6c08268b0ab536771ffa095ec0dbdf4c982d9865380d73aa8ba5e",
-    "action/SKILL.md": "54638bb87a2e319937ca79d302017fe35cb02b88fc358a8f4119aa193c2cfd60",
+    "action/SKILL.md": "1fe7e56ce3fb861f71e1d12d4efbf9674497bc57e148733742ce356a279bf32e",
     "action/call_a_function.py": "ba20f1ca7fdb294446b26e27d285fcdf39448a105b36e85dfdf49c2d99595d0a"
   }
 }
