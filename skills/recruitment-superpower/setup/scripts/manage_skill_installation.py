@@ -28,6 +28,7 @@ from uuid import uuid4
 
 NAME = "recruitment-superpower"
 RELEASE_BASE = "https://recruitment.zhiyuanwangluo.online/downloads/recruitment-superpower"
+GITHUB_RELEASES = "https://github.com/kwgjjeffrey/recruitment-superpower/releases/"
 DEFAULT_ORIGIN = "https://recruitment.zhiyuanwangluo.online"
 VERSION = re.compile(r"\d+\.\d+\.\d+\Z")
 MAX_DOWNLOAD = 64 * 1024 * 1024
@@ -66,26 +67,50 @@ class NoRedirect(urllib.request.HTTPRedirectHandler):
         raise ValueError("The release URL redirected. Use its canonical HTTPS address.")
 
 
+def release_mirror(url):
+    """Map only known release files to the same publisher's official immutable mirror.
+
+    Mirror bytes still pass the existing pinned signature and component hash checks.
+    No application credentials are sent to either distribution endpoint.
+    """
+    relative = url[len(RELEASE_BASE) + 1:]
+    if relative in ('stable.json', 'installer.py', 'install.sh'):
+        filename = 'manifest.json' if relative == 'stable.json' else relative
+        return GITHUB_RELEASES + 'latest/download/' + filename
+    match = re.fullmatch(r'versions/(\d+\.\d+\.\d+)/([A-Za-z0-9._-]+)', relative)
+    if match:
+        return GITHUB_RELEASES + 'download/v' + match[1] + '/' + match[2]
+    return None
+
+
 def download(url, limit=MAX_DOWNLOAD, timeout=60):
     address = urllib.parse.urlsplit(url)
     if address.scheme != "https" or address.netloc != urllib.parse.urlsplit(RELEASE_BASE).netloc:
         raise ValueError("Release downloads must use the configured HTTPS host.")
     if not address.path.startswith(urllib.parse.urlsplit(RELEASE_BASE).path + "/"):
         raise ValueError("Release downloads must stay within the configured release directory.")
+    # Stock macOS curl may have an older TLS backend. Prefer a modern installed curl
+    # when present, but never require Homebrew; the signed GitHub mirror works with stock curl.
+    curl = next((str(path) for path in (Path('/opt/homebrew/opt/curl/bin/curl'), Path('/usr/local/opt/curl/bin/curl'))
+                 if path.is_file()), 'curl')
+    mirror = release_mirror(url)
     for attempt in range(3):
+        source = mirror if mirror and attempt > 0 else url
         fetched = subprocess.run([
-            "curl", "-q", "--http1.1", "--fail", "--silent", "--show-error", "--proto", "=https",
+            curl, "-q", "--http1.1", "--fail", "--silent", "--show-error", "--proto", "=https",
+            *(["--location", "--max-redirs", "4", "--proto-redir", "=https"] if source == mirror else []),
             "--connect-timeout", "5", "--max-time", str(timeout), "--max-filesize", str(limit),
-            "--user-agent", "RecruitmentSuperpower/1.0", url,
+            "--user-agent", "RecruitmentSuperpower/1.0", source,
         ], stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=timeout + 2)
         if not fetched.returncode:
             break
-        if fetched.returncode not in (7, 18, 28, 35, 52, 56, 92) or attempt == 2:
+        if fetched.returncode not in (7, 18, 22, 28, 35, 52, 56, 60, 92) or attempt == 2:
             raise ValueError("Could not download the release over HTTPS: " +
                              fetched.stderr.decode(errors="replace").strip())
         if timeout <= 3:
             raise ValueError("The update check timed out.")
-        print("Download interrupted. Retrying…", file=sys.stderr, flush=True)
+        print("Release download interrupted. Retrying with the publisher's verified release mirror…" if mirror
+              else "Download interrupted. Retrying…", file=sys.stderr, flush=True)
         time.sleep(1)
     content = fetched.stdout
     if len(content) > limit:
