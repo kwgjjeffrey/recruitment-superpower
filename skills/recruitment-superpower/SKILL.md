@@ -27,7 +27,11 @@ Use this page map for ordinary recruiting tasks. Do not start by searching for f
 
 For a create-and-apply task, create the Talent, then follow the Talent detail's add-to-job form link. That form already supplies the eligible Jobs: resolve the requested Job from those choices instead of discovering a separate Job-list workflow first. The same principle applies to interviewer and other form-owned choices. Use one authoritative choice source. If an assignable identifier has already been established, reuse it rather than looking it up again. This does not replace ordinary Job browsing/editing workflows.
 
+For a new Talent, use the create contract directly. Its normal save reports an existing phone without modifying that profile; an unrelated list contract is not a phone-availability check. For an existing person, a name is a lookup, not a unique identity. If multiple records match, report the ambiguity and ask for the missing identifier before opening a recruiting form or submitting a change. End this turn with the clarification question in the Chat response; continue when the user replies, rather than keeping the turn alive waiting for an answer.
+
 Select a displayed section with the page parameter `section`, such as `section: test`. A section is not an asset and has no separate address. Read the page contract, or use `view ... --section test` to inspect only that section's parameters and field meanings. Follow its `forms[].asset_path` for a writable form page; do not construct form addresses. On a form page, filling parameters opens/fills the visible draft, and `action: save` submits it. Use an activity record's ID only to reopen that particular record for editing; do not confuse it with the Application ID.
+
+Check the requested values against the form contract before submitting. If a value is outside a declared range or does not match an allowed value, explain the mismatch and ask for a corrected value; do not knowingly submit an invalid draft or silently change the user's value. Read the relevant form definition before doing record lookups that cannot affect this decision.
 
 ```sh
 "${RECRUITMENT_PYTHON:-python3}" "${RECRUITMENT_SKILL_DIR:-$HOME/.agents/skills/recruitment-superpower}/semantics/view_semantics_asset.py" recruitment/talent/list
@@ -53,3 +57,5 @@ Every CLI ensures the local runtime is available and requests application author
 ## Other outcomes
 
 `ok: false` is failure. Read replies have `phase: observed` and loaded `state`; writes have `phase: executed` and persisted `result`. An error is not an empty business result. After an interrupted or timed-out write, inspect actual state before retrying. Preserve the user's requested read/write scope. Unknown assets, invalid parameters and missing permissions require resolving the specific error, not reinstalling or switching browser tabs.
+
+For an unfamiliar integration, first discover whether its required capability is exposed by this application's authorized Semantics catalog. If the focused search/catalog inspection has no suitable asset, report that the application does not currently expose that operation and stop. Do not try unrelated services, other Skills, desktop apps or browser history to manufacture an integration. Missing capability is different from missing records or a service outage; state only what the observed catalog proves.

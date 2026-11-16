@@ -1,13 +1,13 @@
 {
-  "bundleVersion": "0.2.15",
-  "sourceCommit": "4b7ffe951326dcc8af0df17a13817f360ac57b19",
-  "manifestUrl": "https://recruitment.zhiyuanwangluo.online/downloads/recruitment-superpower/versions/0.2.15/manifest.json",
-  "skillArchiveSha256": "9616b3144c6e96ce734787497a0cfb64e28cacbe4dd9490f9417db7fb6cb8768",
-  "skillVersion": "0.2.14",
+  "bundleVersion": "0.2.17",
+  "sourceCommit": "112d88994a6fc60be84a73b1eb901c80f2bf36b6",
+  "manifestUrl": "https://recruitment.zhiyuanwangluo.online/downloads/recruitment-superpower/versions/0.2.17/manifest.json",
+  "skillArchiveSha256": "9f20bf6f36f8bc6cf9ec0333d338b4228df0831667c98c4cf41be27c75e8133a",
+  "skillVersion": "0.2.16",
   "files": {
     "setup.sh": "2f1cf6a910ae6ed509dec069c86859bca75c4b3eeb0e0d5d0ccc27f4ea3c3a8e",
-    "skill-project.json": "ed152ee39ebe982cca3df42dcb79766f26701d3c05b4ebc30155f993d89124ae",
-    "SKILL.md": "25cb31f65211fdc69cdd3d7a360e12084422af7d32f7a8f95d4cea2c5d67fbf1",
+    "skill-project.json": "0d1589f396e9fbb0640012fb744be1ed0ef3b69b6ddcddb5151bd8bdb54ac6c3",
+    "SKILL.md": "2610d2a49adb00fe7f21c42a9a4fa68db2b01ca15701ab8d7c61c34f47d2416d",
     "setup/SKILL.md": "016bb9c7b7c64a7914b8a49d6cdb217a95d79a2c1710372f693e9bdf486be009",
     "setup/scripts/manage_skill_installation.py": "7b732e88253f258927fdb5038ed7e2fce17f03ed248db1db108de7b8ee14f32f",
     "utils/runtime_client.py": "99be4ad71d94961d1b755b7be0ee1ba5d8899bf1a8efaf688c114b01204d006a",
@@ -36,8 +36,8 @@
     "semantics/search_semantics_assets.py": "87dda51a2ed00416c5ded93aad8e9822d59a5f724a817eee1e5fdfc9ba74905b",
     "semantics/SKILL.md": "5429c52add87732ce9985fbd714c36fa28deda7e146f183c30ed8dfd63fe5da3",
     "action/run_sql.py": "3e97c8d9443c59548c7163f7a2a2d7f601941bebf1b881b6080516c0d5ad9d59",
-    "action/invoke_a_page.py": "745f4c1cfbf6c08268b0ab536771ffa095ec0dbdf4c982d9865380d73aa8ba5e",
-    "action/SKILL.md": "11522052096e49ec33d77938f27e5aba63f65bbfff4b99fe3a346a088e69d4e5",
+    "action/invoke_a_page.py": "5ace1afe3ed6d9bc55ee8e575d5eecbca43b3fc8a978077cff1daf79cfa47354",
+    "action/SKILL.md": "9c37318733e8714ee82e6955f8a18fcf52e1df74421270badf075690877deb9f",
     "action/call_a_function.py": "ba20f1ca7fdb294446b26e27d285fcdf39448a105b36e85dfdf49c2d99595d0a"
   }
 }
