@@ -3,7 +3,7 @@ name: recruitment-builder
 description: Build and publish user-owned tables, portable API-driven pages and analytics reports through the Recruitment platform's authenticated local daemon.
 ---
 
-Use the Builder toolchain independently of recruiting workflows. The platform runtime provides user authentication; it does not require the ATS frontend to remain open for compilation or publishing. The installed tool entry is `${RECRUITMENT_SKILL_DIR:-$HOME/.agents/skills/recruitment-superpower}/builder/build_page.py`; its [Builder guide](../recruitment-superpower/builder/SKILL.md) describes scaffold, build, authenticated upload, version activation, rollback and explicit standalone page instances. Read the installed guide, not a source checkout or a version-store path.
+Use the [Builder guide](../recruitment-superpower/builder/SKILL.md) to choose the Page, Table or Wiki module. Each module owns its guide and tooling. Commands use the registered Recruitment Superpower entry `${RECRUITMENT_SKILL_DIR:-$HOME/.agents/skills/recruitment-superpower}` and its authenticated local daemon; compilation and publishing do not require the ATS frontend to remain open. Read the installed module guide.
 
 If Recruitment Superpower is not installed, install its published platform runtime before using Builder:
 
@@ -14,4 +14,4 @@ sh "${RECRUITMENT_SKILL_DIR:-$HOME/.agents/skills/recruitment-superpower}/setup.
 
 Keep page source in the directory chosen by the user. Builder starts from the Talent API example; customize the schema and frontend API orchestration for the requested page or report. Compile locally and publish only static output through the daemon. No SSH, developer credentials or service deployment belongs in a user's page publication.
 
-For a local file or user table, read the installed [table import guide](../recruitment-superpower/builder/tables.md). Use `${RECRUITMENT_SKILL_DIR:-$HOME/.agents/skills/recruitment-superpower}/builder/import_table.py inspect FILE` to review CSV/TSV/XLSX/JSON data, and `upload FILE --name TABLE_NAME` to import through the existing authenticated Function assets. Reshape a local copy and supply `--schema` when the source needs conversion or explicit SQL types. The scaffold retains exact strings, uses bounded batches and records a receipt; reuse the same receipt for safe retries. Registration and physical storage run on the platform without a service release. Report the returned personal semantic path and verify it with the installed SQL action. Do not put database credentials into a page.
+Use the [Page module](../recruitment-superpower/builder/page/SKILL.md) for pages/reports, the [Table module](../recruitment-superpower/builder/table/SKILL.md) for tables/imports/data updates, and the [Wiki module](../recruitment-superpower/builder/wiki/SKILL.md) for local knowledge drafts. Wiki indexing/publication is not defined yet. Each module gives concrete commands through the registered Superpower entry.

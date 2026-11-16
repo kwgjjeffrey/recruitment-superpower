@@ -14,7 +14,7 @@ import unicodedata
 from uuid import UUID, uuid4
 
 sys.dont_write_bytecode = True
-sys.path.insert(0, str(Path(__file__).absolute().parents[1]))
+sys.path.insert(0, str(Path(__file__).absolute().parents[2]))
 from utils.runtime_client import request
 
 TYPES = {'text', 'integer', 'bigint', 'numeric', 'boolean', 'uuid', 'date', 'timestamptz', 'jsonb'}
@@ -55,7 +55,7 @@ def source(path, sheet=None, encoding='utf-8-sig'):
             yield list(next(reader, [])), reader, None, [], None
     elif suffix == '.xlsx':
         try: from openpyxl import load_workbook
-        except ImportError as error: raise ValueError('XLSX needs openpyxl. Install builder/requirements-import.txt in the Python environment used for this command.') from error
+        except ImportError as error: raise ValueError('XLSX needs openpyxl. Install builder/table/requirements-import.txt in the Python environment used for this command.') from error
         book = load_workbook(path, read_only=True, data_only=True)
         try:
             selected = sheet or book.sheetnames[0]

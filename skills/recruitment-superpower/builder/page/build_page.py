@@ -13,7 +13,7 @@ import urllib.parse
 import uuid
 
 sys.dont_write_bytecode = True
-ENTRY = Path(__file__).absolute().parents[1]
+ENTRY = Path(__file__).absolute().parents[2]
 sys.path.insert(0, str(ENTRY))
 from utils.runtime_client import request
 from page_project import STATE, digest, inspect_build, read, source_digest, validate_dist, write

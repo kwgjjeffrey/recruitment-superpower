@@ -7,7 +7,7 @@ Build a frontend that calls existing registered APIs; API orchestration belongs 
 Run the installed tool through the registered Skill entry. Node/npm are local build dependencies. The local daemon owns application authentication. Use the user's preferred project directory; the location has no effect on the published namespace.
 
 ```sh
-"${RECRUITMENT_PYTHON:-python3}" "${RECRUITMENT_SKILL_DIR:-$HOME/.agents/skills/recruitment-superpower}/builder/build_page.py" new /user/chosen/project --name talent-explorer --title "Talent Explorer"
+"${RECRUITMENT_PYTHON:-python3}" "${RECRUITMENT_SKILL_DIR:-$HOME/.agents/skills/recruitment-superpower}/builder/page/build_page.py" new /user/chosen/project --name talent-explorer --title "Talent Explorer"
 ```
 
 Edit `src/page.schema.ts` for parameters, observed results and descriptions; edit `src/page.tsx` for the visible frontend/API logic. `src/sdk/runtime.ts` defines `PageContext` and the `mount(element, context)` module ABI. The SDK's schema, publication and accept/provide engine are copied from the same canonical source used by ATS, not separately authored. Keep the component source manifest when using copied controls.
@@ -19,8 +19,8 @@ Human controls call `context.accept(patch)`. Subscribe to parameter changes, mar
 ## Check and compile locally
 
 ```sh
-"${RECRUITMENT_PYTHON:-python3}" "${RECRUITMENT_SKILL_DIR:-$HOME/.agents/skills/recruitment-superpower}/builder/build_page.py" build /user/chosen/project
-"${RECRUITMENT_PYTHON:-python3}" "${RECRUITMENT_SKILL_DIR:-$HOME/.agents/skills/recruitment-superpower}/builder/build_page.py" check /user/chosen/project
+"${RECRUITMENT_PYTHON:-python3}" "${RECRUITMENT_SKILL_DIR:-$HOME/.agents/skills/recruitment-superpower}/builder/page/build_page.py" build /user/chosen/project
+"${RECRUITMENT_PYTHON:-python3}" "${RECRUITMENT_SKILL_DIR:-$HOME/.agents/skills/recruitment-superpower}/builder/page/build_page.py" check /user/chosen/project
 ```
 
 `build` installs locked dependencies (`npm ci` after the first lockfile), checks component provenance and TypeScript, validates the page schemas, and runs Vite/MF. It validates the generated `mf-manifest.json`, ES module entry, exposed `Page`, chunk/CSS references and generated `page.json`. `.recruitment/build.json` records source/output hashes. `check` rechecks source types and component provenance after dependencies are installed; it does not produce a releasable build.
@@ -30,7 +30,7 @@ Only compiled JS/CSS/static assets and generated contracts enter `dist`. Runtime
 ## Publish as the user
 
 ```sh
-"${RECRUITMENT_PYTHON:-python3}" "${RECRUITMENT_SKILL_DIR:-$HOME/.agents/skills/recruitment-superpower}/builder/build_page.py" publish /user/chosen/project
+"${RECRUITMENT_PYTHON:-python3}" "${RECRUITMENT_SKILL_DIR:-$HOME/.agents/skills/recruitment-superpower}/builder/page/build_page.py" publish /user/chosen/project
 ```
 
 The name defaults to `package.json.recruitmentPage.name`; `--name another-page` publishes a separate page in the same user's namespace. The version defaults to the output digest; an explicit `--version` is immutable. The tool verifies the build receipt and then calls the registered begin/upload/activate Functions through the daemon. The caller supplies no Cookie, token, owner ID or deployment key. Repeated identical uploads resume; repeating an already published version skips writes and reactivates it.
@@ -38,8 +38,8 @@ The name defaults to `package.json.recruitmentPage.name`; `--name another-page` 
 The server derives `users/<immutable-user-id>/pages/<name>`. Different users may use the same name/version without collision. Immutable files are keyed by server-generated build IDs; the active page binding selects a build. Responses include `namespace`, `assetPath`, `buildId`, `version`, independent `url` and ATS `workspaceUrl`. ATS **Custom pages** lists the user's published pages. Page publication never restarts or redeploys ATS. `.recruitment/publication.json` stores the resulting identity and expected hashes locally.
 
 ```sh
-"${RECRUITMENT_PYTHON:-python3}" "${RECRUITMENT_SKILL_DIR:-$HOME/.agents/skills/recruitment-superpower}/builder/build_page.py" versions
-"${RECRUITMENT_PYTHON:-python3}" "${RECRUITMENT_SKILL_DIR:-$HOME/.agents/skills/recruitment-superpower}/builder/build_page.py" activate BUILD_ID
+"${RECRUITMENT_PYTHON:-python3}" "${RECRUITMENT_SKILL_DIR:-$HOME/.agents/skills/recruitment-superpower}/builder/page/build_page.py" versions
+"${RECRUITMENT_PYTHON:-python3}" "${RECRUITMENT_SKILL_DIR:-$HOME/.agents/skills/recruitment-superpower}/builder/page/build_page.py" activate BUILD_ID
 ```
 
 `versions` includes `active` for each owned build. Activating an earlier build rolls back that page; existing documents keep their loaded module and reloads load the active build. After an uncertain publication result, inspect versions before retrying. A failure is not evidence of successful activation.
@@ -47,7 +47,7 @@ The server derives `users/<immutable-user-id>/pages/<name>`. Different users may
 ## Verify the publication and visible page
 
 ```sh
-"${RECRUITMENT_PYTHON:-python3}" "${RECRUITMENT_SKILL_DIR:-$HOME/.agents/skills/recruitment-superpower}/builder/build_page.py" verify /user/chosen/project
+"${RECRUITMENT_PYTHON:-python3}" "${RECRUITMENT_SKILL_DIR:-$HOME/.agents/skills/recruitment-superpower}/builder/page/build_page.py" verify /user/chosen/project
 ```
 
 This verifies the authenticated user's active build identity, compares the server/local file manifests, downloads the published static files and checks every size/SHA-256. `status: static_verified` explicitly does not claim a browser workflow passed. No raw business data is persisted in verification receipts.
@@ -55,8 +55,8 @@ This verifies the authenticated user's active build identity, compares the serve
 Open the returned independent URL and select its connected instance:
 
 ```sh
-"${RECRUITMENT_PYTHON:-python3}" "${RECRUITMENT_SKILL_DIR:-$HOME/.agents/skills/recruitment-superpower}/builder/build_page.py" instances
-"${RECRUITMENT_PYTHON:-python3}" "${RECRUITMENT_SKILL_DIR:-$HOME/.agents/skills/recruitment-superpower}/builder/build_page.py" verify /user/chosen/project --instance INSTANCE_ID --params '{"q":"engineer"}'
+"${RECRUITMENT_PYTHON:-python3}" "${RECRUITMENT_SKILL_DIR:-$HOME/.agents/skills/recruitment-superpower}/builder/page/build_page.py" instances
+"${RECRUITMENT_PYTHON:-python3}" "${RECRUITMENT_SKILL_DIR:-$HOME/.agents/skills/recruitment-superpower}/builder/page/build_page.py" verify /user/chosen/project --instance INSTANCE_ID --params '{"q":"engineer"}'
 ```
 
 Inside the ATS conversation that owns the open browser tab, use `verify ... --browser --params '{"q":"engineer"}'`. Both modes call the same `action.page` and wait for actual observed API state. `status: verified` additionally confirms that browser readback. Parameters are optional; omit them to read without changing filters. Independently check the requested business outcomes, manual controls and reload; this generic verification cannot prove every possible workflow. Outside a conversation, an instance must be explicit; the tool never guesses a browser tab. ATS conversations cannot switch their originating tab.

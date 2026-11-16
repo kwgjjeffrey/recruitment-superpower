@@ -1,5 +1,9 @@
 # Builder
 
-For user-owned data tables or local file uploads, use [Personal table import](tables.md). It provides `import_table.py inspect` and `upload`, format conversion guidance, typed columns and bounded API batches. For pages and reports, continue below.
+| Build target | Module |
+|---|---|
+| Portable API-driven page or analytics report | [Page](page/SKILL.md) |
+| Private typed table, file import or data update | [Table](table/SKILL.md) |
+| Local knowledge draft; indexing is not defined yet | [Wiki](wiki/SKILL.md) |
 
-For portable API-driven pages and analytics reports, read [Page development and release](pages.md). It covers scaffold, shared page/Agent contracts, local compilation, user-authenticated publishing, static verification and live browser verification. User projects stay in their chosen directory. Publishing a page uploads precompiled files through the daemon and never deploys a backend service.
+Use the installed Recruitment Superpower entry supplied in `RECRUITMENT_SKILL_DIR` (normally `$HOME/.agents/skills/recruitment-superpower`). User-created tables and compiled pages are published through authenticated APIs without deploying or restarting a service. Keep local source in a user-selected directory. Each module gives its concrete commands and verification steps.
