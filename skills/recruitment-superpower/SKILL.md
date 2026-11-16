@@ -7,6 +7,10 @@ Complete the recruiting task through the user's application and report the actua
 
 ## Happy path
 
+### Check whether the requested operation applies
+
+Before choosing a write workflow, combine the business state the user has already given with the relevant contract's rules. Read the smallest contract that can decide whether the operation is allowed; resolve record IDs only if that decision still needs the actual record. If a known state makes the requested operation unavailable, explain the restriction and end the turn. Do not discover or open a write form to test a restriction already established by the contract. Offer an alternative without executing a different change on the user's behalf.
+
 ### Choose the recruiting workflow
 
 Use this page map for ordinary recruiting tasks. Do not start by searching for familiar recruiting pages.

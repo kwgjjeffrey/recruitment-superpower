@@ -4,6 +4,8 @@ Execute a known page, function or table capability with the user's application i
 
 ## Page
 
+Apply the parent page's business-state rules before following a write-form link. When the user has supplied the relevant state and the known contract rules out the change, explain that limit without opening a draft or trying a save. A rejected call is not the way to verify a rule already known. Read the actual record only when a missing fact can change that decision; do not substitute another mutation for the requested one.
+
 ```sh
 "${RECRUITMENT_PYTHON:-python3}" "${RECRUITMENT_SKILL_DIR:-$HOME/.agents/skills/recruitment-superpower}/action/invoke_a_page.py" recruitment/talent/list --params '{"availability":"open"}'
 "${RECRUITMENT_PYTHON:-python3}" "${RECRUITMENT_SKILL_DIR:-$HOME/.agents/skills/recruitment-superpower}/action/invoke_a_page.py" recruitment/talent/list
