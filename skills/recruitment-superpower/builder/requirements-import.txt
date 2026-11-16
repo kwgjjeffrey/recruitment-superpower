@@ -1,0 +1,2 @@
+# CSV/TSV/JSON imports use only the standard library. XLSX reading is optional.
+openpyxl>=3.1,<4
