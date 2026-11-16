@@ -23,7 +23,9 @@ Use this page map for ordinary recruiting tasks. Do not start by searching for f
 | Create a person or job | `recruitment/talent/create` or `recruitment/jobs/create` | The corresponding detail page using the saved ID |
 | Edit a person or job | `recruitment/talent/edit` or `recruitment/jobs/edit` | Resolve its ID from the corresponding list, then read the original editor fields |
 | Add a person to a job | `recruitment/talent/detail` | Follow its add-to-job form link; the form supplies eligible Job choices |
-| Work with leads | `recruitment/leads/list` | `recruitment/leads/detail`, `recruitment/leads/create` or `recruitment/leads/edit` |
+| Find a Lead | `recruitment/leads/list` | `recruitment/leads/detail` using the returned Lead ID |
+| Read or record Lead communication Notes; convert a Lead | `recruitment/leads/detail` | Its linked Note or conversion form, when its business rules allow the operation |
+| Create a Lead or edit its profile fields | `recruitment/leads/create` or `recruitment/leads/edit` | Profile fields such as name, contact details and company; communication Notes belong to the detail workflow |
 | Review assigned recruiting tasks | `recruitment/tasks/list` | The linked candidate and Application |
 | Configure offices and meeting rooms | `recruitment/settings/offices` | Its declared actions |
 
