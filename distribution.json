@@ -1,13 +1,13 @@
 {
-  "bundleVersion": "0.2.13",
-  "sourceCommit": "81332b038cf101d5ca2f6a7614f4c44f1ee75b53",
-  "manifestUrl": "https://recruitment.zhiyuanwangluo.online/downloads/recruitment-superpower/versions/0.2.13/manifest.json",
-  "skillArchiveSha256": "198cdea27578f7a0c4609db0f13206e8b34e0553c94233d902607e371edaa0f2",
-  "skillVersion": "0.2.12",
+  "bundleVersion": "0.2.14",
+  "sourceCommit": "7320d75d9951e14ff1e8de9f0371726a6175a154",
+  "manifestUrl": "https://recruitment.zhiyuanwangluo.online/downloads/recruitment-superpower/versions/0.2.14/manifest.json",
+  "skillArchiveSha256": "e68d8c9868b524c9521a05c3db78286795ddb83d6e1fe57d2371503d9606c895",
+  "skillVersion": "0.2.13",
   "files": {
     "setup.sh": "2f1cf6a910ae6ed509dec069c86859bca75c4b3eeb0e0d5d0ccc27f4ea3c3a8e",
-    "skill-project.json": "d2afcfef2d632883787fa2495dc44c7adbf19761bd3aaa776459d4fe75a6c2ee",
-    "SKILL.md": "986c5c501da403ad1f8c4fb45eef4df934ba606e8885f0e90db93ee5fd10d8b6",
+    "skill-project.json": "67153c4314d8b72c37520ef16b53d47967ba35c16dc5828be03d47108c5dd1e0",
+    "SKILL.md": "fea60740b5092e55461c0f8d4c507e781604c4e8eb287a68edd78f9cc4f4f9f4",
     "setup/SKILL.md": "016bb9c7b7c64a7914b8a49d6cdb217a95d79a2c1710372f693e9bdf486be009",
     "setup/scripts/manage_skill_installation.py": "7b732e88253f258927fdb5038ed7e2fce17f03ed248db1db108de7b8ee14f32f",
     "utils/runtime_client.py": "99be4ad71d94961d1b755b7be0ee1ba5d8899bf1a8efaf688c114b01204d006a",
@@ -37,7 +37,7 @@
     "semantics/SKILL.md": "5429c52add87732ce9985fbd714c36fa28deda7e146f183c30ed8dfd63fe5da3",
     "action/run_sql.py": "3e97c8d9443c59548c7163f7a2a2d7f601941bebf1b881b6080516c0d5ad9d59",
     "action/invoke_a_page.py": "745f4c1cfbf6c08268b0ab536771ffa095ec0dbdf4c982d9865380d73aa8ba5e",
-    "action/SKILL.md": "4279fdccebf2b905ab88ccad721fbc5e532d9bc3e93d37399076c58ebf224642",
+    "action/SKILL.md": "11522052096e49ec33d77938f27e5aba63f65bbfff4b99fe3a346a088e69d4e5",
     "action/call_a_function.py": "ba20f1ca7fdb294446b26e27d285fcdf39448a105b36e85dfdf49c2d99595d0a"
   }
 }

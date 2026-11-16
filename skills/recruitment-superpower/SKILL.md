@@ -18,11 +18,14 @@ Use this page map for ordinary recruiting tasks. Do not start by searching for f
 | Inspect a job or its candidates | `recruitment/jobs/list` | `recruitment/jobs/detail` |
 | Create a person or job | `recruitment/talent/create` or `recruitment/jobs/create` | The corresponding detail page using the saved ID |
 | Edit a person or job | `recruitment/talent/edit` or `recruitment/jobs/edit` | Resolve its ID from the corresponding list, then read the original editor fields |
+| Add a person to a job | `recruitment/talent/detail` | Follow its add-to-job form link; the form supplies eligible Job choices |
 | Work with leads | `recruitment/leads/list` | `recruitment/leads/detail`, `recruitment/leads/create` or `recruitment/leads/edit` |
 | Review assigned recruiting tasks | `recruitment/tasks/list` | The linked candidate and Application |
 | Configure offices and meeting rooms | `recruitment/settings/offices` | Its declared actions |
 
 **Talent and Application share the visible detail interface, with distinct business page identities.** `recruitment/talent/detail` owns the person's resume, shared Notes and application choices. `recruitment/applications/detail` owns the selected job's stage, resume evaluation, test, interview and offer. Application detail needs both `id` (Talent ID) and `applicationId`; obtain them from the list or the Talent's application choices. Notes always belong to the Talent.
+
+For a create-and-apply task, create the Talent, then follow the Talent detail's add-to-job form link. That form already supplies the eligible Jobs: resolve the requested Job from those choices instead of discovering a separate Job-list workflow first. The same principle applies to interviewer and other form-owned choices. Use one authoritative choice source. If an assignable identifier has already been established, reuse it rather than looking it up again. This does not replace ordinary Job browsing/editing workflows.
 
 Select a displayed section with the page parameter `section`, such as `section: test`. A section is not an asset and has no separate address. Read the page contract, or use `view ... --section test` to inspect only that section's parameters and field meanings. Follow its `forms[].asset_path` for a writable form page; do not construct form addresses. On a form page, filling parameters opens/fills the visible draft, and `action: save` submits it. Use an activity record's ID only to reopen that particular record for editing; do not confuse it with the Application ID.
 
