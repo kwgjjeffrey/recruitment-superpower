@@ -13,6 +13,8 @@ Before choosing a write workflow, combine the business state the user has alread
 
 ### Choose the recruiting workflow
 
+For a user-built page (`users/.../pages/...`), use that page's own contract. When the user refers to the current custom page or names a page absent from the map below (for example, Talent Explorer), read `"$ATS_PAGE_BRIDGE/context.json"` to identify it, inspect that asset, and invoke it. Do not substitute a built-in recruiting page just because it displays similar data. Builder is needed to create or publish pages, not to operate an already published page.
+
 Use this page map for ordinary recruiting tasks. Do not start by searching for familiar recruiting pages.
 
 | User's task | Entry asset | Continue to |

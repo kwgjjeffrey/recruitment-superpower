@@ -1,6 +1,13 @@
 import {defineConfig} from 'vite';
 import {federation} from '@module-federation/vite';
 import {fileURLToPath} from 'node:url';
+import {readFileSync} from 'node:fs';
 import {page,publication} from './src/page.schema';
+import {compileSchema,defaults} from './src/sdk/contract';
+import {PAGE_PROTOCOL} from './src/sdk/runtime';
 const root=fileURLToPath(new URL('.',import.meta.url));
-export default defineConfig({root,base:'./',plugins:[federation({name:'talent_explorer',filename:'remoteEntry.js',manifest:true,exposes:{'./Page':'./src/page.tsx'},shared:{},dts:false}),{name:'page-contract',generateBundle(){this.emitFile({type:'asset',fileName:'page.json',source:JSON.stringify({...page,publication})})}}],resolve:{alias:{'@':fileURLToPath(new URL('./src',import.meta.url))},dedupe:['react','react-dom']},build:{target:'esnext',outDir:'dist',minify:true}});
+const project=JSON.parse(readFileSync(new URL('./package.json',import.meta.url),'utf8')).recruitmentPage;
+if(!/^[a-f0-9]{32}$/.test(project?.id))throw new Error('Use the Builder new command to create the project identity.');
+const remote=`page_${project.id}_${process.env.RECRUITMENT_BUILD_DIGEST??'local'}`;
+compileSchema(page.views.main.params);compileSchema(page.views.main.returns);defaults(page.views.main);
+export default defineConfig({root,base:'./',plugins:[federation({name:remote,filename:'remoteEntry.js',manifest:true,exposes:{'./Page':'./src/page.tsx'},shared:{},dts:false}),{name:'page-contract',generateBundle(){this.emitFile({type:'asset',fileName:'page.json',source:JSON.stringify({...page,publication,runtime:{protocol:PAGE_PROTOCOL.name,version:PAGE_PROTOCOL.version,remote}})})}}],resolve:{alias:{'@':fileURLToPath(new URL('./src',import.meta.url))},dedupe:['react','react-dom']},build:{target:'esnext',outDir:'dist',minify:true}});
