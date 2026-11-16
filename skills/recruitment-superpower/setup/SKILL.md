@@ -1,6 +1,6 @@
 # Setup
 
-Install and update the Skill through GitHub with npx skills. The Rust runtime is downloaded independently from the signed HTTPS release channel. Installation needs Node.js/npx; runtime lifecycle scripts need Python 3.9+, curl and OpenSSL. Chat additionally requires the user's installed and signed-in Codex CLI.
+Install and update the Skill through GitHub with npx skills. The Rust runtime is downloaded independently from the signed HTTPS release channel. Installation needs Node.js/npx; runtime lifecycle scripts need Python 3.9+, curl and OpenSSL. Chat additionally requires the user's installed and signed-in Codex CLI. Python SQL DataFrame imports require pandas in the caller's interpreter (`python -m pip install -r <registered-skill-entry>/requirements-analysis.txt`); terminal SQL commands remain dependency-free.
 
 ```sh
 npx --yes skills add kwgjjeffrey/recruitment-superpower --global --agent codex --skill recruitment-superpower --yes

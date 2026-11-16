@@ -1,0 +1,2 @@
+# Only Python DataFrame imports need pandas. Terminal commands use the standard library.
+pandas>=2.2

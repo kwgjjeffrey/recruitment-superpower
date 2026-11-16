@@ -1,5 +1,6 @@
 """Shared native client: recover installation/startup, then execute through one daemon protocol."""
 import fcntl
+from decimal import Decimal
 import json
 import os
 from pathlib import Path
@@ -135,7 +136,7 @@ def _ipc(channel, action):
                     raise RuntimeError('Runtime response is too large.')
                 if data.endswith(b'\n'):
                     try:
-                        reply=json.loads(data)
+                        reply=json.loads(data, parse_float=Decimal) if action.get('operation') == 'action.sql' else json.loads(data)
                         if reply.get('id')==request_id:
                             return reply['result']
                     except (ValueError,KeyError):
@@ -173,7 +174,7 @@ def request(action):
     call=urllib.request.Request(f'http://127.0.0.1:{info["port"]}/api/execute',data=json.dumps({'action':action,'tabId':context.get('tab_id'),'userId':context.get('user_id')}).encode(),headers={'Origin':origin,'Authorization':'Bearer '+row[0],'Content-Type':'application/json'},method='POST')
     opener=urllib.request.build_opener(urllib.request.ProxyHandler({}))
     with opener.open(call,timeout=170) as response:
-        return json.load(response)
+        return json.load(response, parse_float=Decimal) if action.get('operation') == 'action.sql' else json.load(response)
 
 
 def display(action, output='json'):

@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "name": "recruitment-superpower",
-  "version": "0.2.21",
+  "version": "0.2.22",
   "sourceDirectory": "skill/recruitment-superpower",
   "releaseChannel": "https://recruitment.zhiyuanwangluo.online/downloads/recruitment-superpower/stable.json",
   "artifactPaths": [
@@ -12,11 +12,12 @@
     "semantics",
     "action",
     "utils",
-    "release/SKILL.md"
+    "release/SKILL.md",
+    "requirements-analysis.txt"
   ],
   "componentVersions": {
-    "skill": "0.2.21",
-    "runtime": "0.2.13"
+    "skill": "0.2.22",
+    "runtime": "0.2.14"
   },
   "sourceRepository": "https://github.com/kwgjjeffrey/recruitment-superpower"
 }
