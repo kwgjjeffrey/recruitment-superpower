@@ -62,6 +62,8 @@ Use a short, evidence-complete path. Read page context only to resolve missing p
 
 ## Prerequisite check
 
+For building a user's own portable API-driven page or analytics report, use [Builder](builder/SKILL.md). It creates a project in the user's chosen directory and publishes the compiled MF page through the same authenticated daemon. Ordinary recruiting workflows above do not require Builder.
+
 Every CLI ensures the local runtime is available and requests application authorization when necessary. The daemon manages application credentials, token refresh and authorized Semantics/API requests. Inside ATS it supplies the Skill entry, Python interpreter and per-conversation channel. Use [Setup](setup/SKILL.md) for installation, update, restart or recovery when automatic startup is blocked.
 
 ## Other outcomes

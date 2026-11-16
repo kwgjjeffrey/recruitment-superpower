@@ -1,13 +1,13 @@
 {
-  "bundleVersion": "0.2.23",
-  "sourceCommit": "1c79d077ef8f2a81f930d61a627dfe8582b44021",
-  "manifestUrl": "https://recruitment.zhiyuanwangluo.online/downloads/recruitment-superpower/versions/0.2.23/manifest.json",
-  "skillArchiveSha256": "2f714f97ac7d0ff70deccbfa697616398eb3125e858a9ab8beb7a6bb24f1b559",
-  "skillVersion": "0.2.22",
+  "bundleVersion": "0.2.24",
+  "sourceCommit": "fb526951c848252917bcb18e067416e3235d492c",
+  "manifestUrl": "https://recruitment.zhiyuanwangluo.online/downloads/recruitment-superpower/versions/0.2.24/manifest.json",
+  "skillArchiveSha256": "39f53b2b9184b48b9078bd66eb983a059466fc89924c864d90bf538619e1c6a7",
+  "skillVersion": "0.2.23",
   "files": {
     "setup.sh": "2f1cf6a910ae6ed509dec069c86859bca75c4b3eeb0e0d5d0ccc27f4ea3c3a8e",
-    "skill-project.json": "84e8d71e21111f856476ec77d3ad5f95a453032d59cc6073d89c8658182e0955",
-    "SKILL.md": "94f673b2d965a307387b9491d2a67b6941baf57295f3a19785dbecebb1fed4f5",
+    "skill-project.json": "5b17b6aeac3319b679d88f905ac74d1780ed8615bf5eb9cea2aa89d4e1cf8132",
+    "SKILL.md": "50051cdfbc9ed7e5d7fd125edb2ddf9272bf4412f7c3d4824a903ab9d1f5ffba",
     "requirements-analysis.txt": "3c1bc818aeb336a9bbc8776e1db86dc1218c17f289d49ec40fc658237c41b07a",
     "setup/SKILL.md": "f96978aea59822b0999a6d3737137be3cba344ae7417c8f859150a9e5c983499",
     "setup/scripts/manage_skill_installation.py": "7b732e88253f258927fdb5038ed7e2fce17f03ed248db1db108de7b8ee14f32f",
@@ -38,8 +38,24 @@
     "semantics/search_semantics_assets.py": "87dda51a2ed00416c5ded93aad8e9822d59a5f724a817eee1e5fdfc9ba74905b",
     "semantics/SKILL.md": "b53af2e0fc4b4fe0508db82f225749833747159e6c1c74e20e010a37f0814c67",
     "action/run_sql.py": "fe27307a6c9bd51a8f39c420b11626e8d4bf6fd8b99920b063a15d90a0f80023",
-    "action/invoke_a_page.py": "5ace1afe3ed6d9bc55ee8e575d5eecbca43b3fc8a978077cff1daf79cfa47354",
+    "action/invoke_a_page.py": "f93252b4ea596e5b607303ca0524285b83b59801d4d53ddd961f152872cc945e",
     "action/SKILL.md": "d22700d59de93b0670f604ec1831e02486c3464254f13c7413507eda59d8877e",
-    "action/call_a_function.py": "ba20f1ca7fdb294446b26e27d285fcdf39448a105b36e85dfdf49c2d99595d0a"
-  }
+    "action/call_a_function.py": "ba20f1ca7fdb294446b26e27d285fcdf39448a105b36e85dfdf49c2d99595d0a",
+    "builder/build_page.py": "6457330d5530a902799b3563f17a0d0b656ac346c109c2c65a0c093c16f5cf93",
+    "builder/SKILL.md": "a4c2ad2652366f6a0e52af081a470d6c97bfc93934136f6a3863b96f7638754b",
+    "builder/sdk/schema.ts": "cb18aa56ef6d739a87a990a979a039d939798fb97812cb2a8bdffb7255b0b0a7",
+    "builder/sdk/contract.ts": "fe8fd24afc9607b1d60bc53cb078c0487cdd5c6025e72d4d22254a28c89f863a",
+    "builder/sdk/publication.ts": "e3b3290f2f6b191224002b7495d977277e167c9fed802535392795d669358dc7",
+    "builder/templates/talent/index.html": "62210933fc2bd14169b0fa4a9bc2d2ed58eb2938d23564b3d115ae75701764b9",
+    "builder/templates/talent/package.json": "5257ed00bafbadcb3b4f90a3e789810bc1777acc4585a79e4e277fae32875d02",
+    "builder/templates/talent/vite.config.ts": "1876aebecd5851cacf998814923b4596103a8afe5a5ebd98c925e7c9f207c095",
+    "builder/templates/talent/component-sources.json": "12c51c126105c35cd4a808108a5749a9cf9348589fa95d934fd26c9aa80fd94f",
+    "builder/templates/talent/src/page.schema.ts": "678846961c0806daab40bb90f0f2cfb5e6f0636705a991ca53cdb71d359481c9",
+    "builder/templates/talent/src/style.css": "d2ae73f613168c4c5e01cc51ef23182fe5b2e5675ef6ad070dfd8aba27e3b5f8",
+    "builder/templates/talent/src/utils.js": "55bbdc94cef3e0c8a8bba386e94f97228dd2c967fe61466fc565378890550c08",
+    "builder/templates/talent/src/page.tsx": "158b8515506767944d2e5f09786ca6cf1c29bda72a477511566b53a705c52bbc",
+    "builder/templates/talent/src/ui/button.tsx": "ddbe816e402809a2a448c866a9bea14873bc944866e8277a91bc2de58a81bbad",
+    "builder/templates/talent/src/ui/input.tsx": "21fd2c51b2d6b04e0c7bdfe0a59d79457ae84cebaa7944679fe3c07478a1da6b"
+  },
+  "builderSkillSha256": "26390319fb7470d4d389a02a0cb3cd0d2b78650fe82f6ec22be0c81836b7ae2a"
 }

@@ -1,0 +1,23 @@
+{
+  "selection": "Omni semantic fields were evaluated. This API-only starter reuses the ATS shadcn/Base UI search Input and Button adapters and the shared page schema/accept/provide. No new field implementation.",
+  "files": [
+    {
+      "source": "frontend/src/components/ui/input.tsx",
+      "sourceSha256": "65848da76834211a6c0c24c226b9444421f42e8c96c8cada642137ebcdbc16c9",
+      "target": "src/ui/input.tsx",
+      "targetSha256": "21fd2c51b2d6b04e0c7bdfe0a59d79457ae84cebaa7944679fe3c07478a1da6b"
+    },
+    {
+      "source": "frontend/src/components/ui/button.tsx",
+      "sourceSha256": "3042fe03197e2afbc1e5f53f1018439add52a66363bd85f2f439b7b2cfa9039a",
+      "target": "src/ui/button.tsx",
+      "targetSha256": "ddbe816e402809a2a448c866a9bea14873bc944866e8277a91bc2de58a81bbad"
+    },
+    {
+      "source": "frontend/src/lib/utils.js",
+      "sourceSha256": "55bbdc94cef3e0c8a8bba386e94f97228dd2c967fe61466fc565378890550c08",
+      "target": "src/utils.js",
+      "targetSha256": "55bbdc94cef3e0c8a8bba386e94f97228dd2c967fe61466fc565378890550c08"
+    }
+  ]
+}
