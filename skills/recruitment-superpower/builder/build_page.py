@@ -10,7 +10,6 @@ import shutil
 import subprocess
 import sys
 import urllib.parse
-import urllib.request
 import uuid
 
 sys.dont_write_bytecode = True
@@ -99,9 +98,17 @@ def verify(directory, instance=None, browser=False, params=None):
         raise ValueError('Static verification requires HTTPS or a loopback test origin.')
     base = f'{origin.scheme}://{origin.netloc}/page-files/{published["buildId"]}/'
 
+    # Match the installer transport on macOS, whose system Python TLS may be older.
+    curl = next((str(p) for p in (Path('/opt/homebrew/opt/curl/bin/curl'), Path('/usr/local/opt/curl/bin/curl')) if p.is_file()), 'curl')
+
     def verify_file(item):
-        with urllib.request.urlopen(base + item['path'], timeout=30) as response:
-            content = response.read(item['size'] + 1)
+        fetched = subprocess.run([curl, '-q', '--http1.1', '--fail', '--silent', '--show-error',
+            '--proto', '=https,http' if origin.scheme == 'http' else '=https',
+            '--connect-timeout', '5', '--max-time', '30', '--max-filesize', str(item['size'] + 1),
+            base + item['path']], stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=32)
+        if fetched.returncode:
+            raise RuntimeError('Static readback failed for ' + item['path'] + ': ' + fetched.stderr.decode(errors='replace').strip())
+        content = fetched.stdout
         if len(content) != item['size'] or digest(content) != item['sha256']:
             raise ValueError('Published static file differs: ' + item['path'])
 
