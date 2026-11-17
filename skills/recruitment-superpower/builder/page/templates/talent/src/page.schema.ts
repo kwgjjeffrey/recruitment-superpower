@@ -1,5 +1,5 @@
-import type {PageSchema,Params,Value} from './sdk/schema';
-import {object} from './sdk/portable';
+import type {PageSchema,Params,Value} from '@recruitment/page/schema';
+import {object} from '@recruitment/page/portable';
 
 // One declaration for controls, validation, table columns, TypeScript and Agent semantics.
 export const page={

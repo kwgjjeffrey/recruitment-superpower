@@ -1,0 +1,14 @@
+{
+  "name": "portable-user-page",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "check": "recruitment-page check",
+    "build": "recruitment-page build",
+    "semantics": "recruitment-page semantics"
+  },
+  "dependencies": {
+    "react": "19.3.0",
+    "react-dom": "19.3.0"
+  }
+}

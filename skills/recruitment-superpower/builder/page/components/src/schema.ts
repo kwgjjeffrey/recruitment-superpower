@@ -1,4 +1,4 @@
-import type {FieldSchema,ObjectSchema} from '../sdk/schema';
+import type {FieldSchema,ObjectSchema} from './contracts/schema';
 /** This catalogue is also the renderer's dispatch. Unsupported declarations fail at build time. */
 export function controlKind(field:FieldSchema) {
   const widget=field.ui?.widget;

@@ -1,9 +1,9 @@
 /** Selected Omni copy-in primitives. No data fetching or separate form state. */
 import type {ReactNode} from 'react';
-import {cn} from '../utils';
+import {cn} from './utils';
 export {cn};
-export {Button} from '../ui/button';
-export {Input} from '../ui/input';
+export {Button} from './primitives/button';
+export {Input} from './primitives/input';
 export const controlCls='h-9 w-full rounded-lg border border-input bg-card px-2.5 py-1 text-sm text-foreground outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50';
 export function PageShell({title,description,children}:{title:ReactNode;description?:ReactNode;children:ReactNode}) {
   return <section className="mx-auto w-full max-w-6xl p-4 sm:p-8"><header className="mb-7"><h1 className="text-3xl font-semibold tracking-tight">{title}</h1>{description&&<p className="mt-2 text-muted-foreground">{description}</p>}</header>{children}</section>;

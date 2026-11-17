@@ -1,0 +1,82 @@
+{
+  "selection": "Builder-owned standard components, retained from the existing semantic page kit, plus the actual Omni SQL visualization definition/compiler/renderer. Distributed once as a pinned local npm dependency; business source has no host, UI, SDK or tooling copies.",
+  "files": [
+    {
+      "source": "frontend/src/components/ui/input.tsx",
+      "sourceSha256": "65848da76834211a6c0c24c226b9444421f42e8c96c8cada642137ebcdbc16c9",
+      "target": "src/primitives/input.tsx",
+      "targetSha256": "21fd2c51b2d6b04e0c7bdfe0a59d79457ae84cebaa7944679fe3c07478a1da6b",
+      "adaptation": "Package-owned import paths; business consumer uses fixed dependency."
+    },
+    {
+      "source": "frontend/src/components/ui/button.tsx",
+      "sourceSha256": "3042fe03197e2afbc1e5f53f1018439add52a66363bd85f2f439b7b2cfa9039a",
+      "target": "src/primitives/button.tsx",
+      "targetSha256": "ddbe816e402809a2a448c866a9bea14873bc944866e8277a91bc2de58a81bbad",
+      "adaptation": "Package-owned import paths; business consumer uses fixed dependency."
+    },
+    {
+      "source": "frontend/src/lib/utils.js",
+      "sourceSha256": "55bbdc94cef3e0c8a8bba386e94f97228dd2c967fe61466fc565378890550c08",
+      "target": "src/utils.js",
+      "targetSha256": "55bbdc94cef3e0c8a8bba386e94f97228dd2c967fe61466fc565378890550c08",
+      "adaptation": "Package-owned import paths; business consumer uses fixed dependency."
+    },
+    {
+      "source": "frontend/src/components/omni/ui/select.tsx",
+      "sourceSha256": "dcb38750e727006ce0820df0c85d4e2e3081eb86174adb56c3a4f1bb262886d3",
+      "target": "src/select.tsx",
+      "targetSha256": "3c70cd1916d7cebf50fcc885536d3a6ed395a83d1929ec9cee7825d0b1d5baaa",
+      "adaptation": "Preserved Radix behavior and scoped portal/theme; use lucide icons and local primitive paths. Package-owned import paths; business consumer uses fixed dependency."
+    },
+    {
+      "source": "omni-builder/development/omni-runtime/page/templates/pages/_shared/ui.tsx",
+      "sourceSha256": "ecb73973c84c448299cc8f72450259c741dbd6cc8cdfaeaa92f8822a9c029b67",
+      "target": "src/ui.tsx",
+      "targetSha256": "42931e577229b347fa6f61130200034667b5525b8983e523791a2cb6c233d619",
+      "adaptation": "Selected Field/Card/PageShell/loading/error patterns; English copy, existing shadcn controls and explicit retry. Package-owned import paths; business consumer uses fixed dependency."
+    },
+    {
+      "source": "omni-builder/development/omni-runtime/page/templates/pages/_shared/portal.tsx",
+      "sourceSha256": "06c0723ce271c93f0a824d77cb89807b4532ef92547af9a99013f170dc8207f2",
+      "target": "src/portal.tsx",
+      "targetSha256": "ff6731bae56c616285a3b20ea3d56b219964e9ab016c39766d49f92ed750ba39",
+      "adaptation": "Only the independent document theme root; no ATS canvas, positioning engine or global style injection. Package-owned import paths; business consumer uses fixed dependency."
+    },
+    {
+      "source": "omni-builder/development/omni-runtime/page/templates/pages/_shared/auto.tsx",
+      "sourceSha256": "5c137a05f877f30c7962901e8b4e0bffb96452e1760c2b1052d6196a84a27ee7",
+      "target": "src/fields.tsx",
+      "targetSha256": "bdceae9fbb0e550b8e5519f36143b7b4579a72405a38eedaaeb4f15e36d9e2fa",
+      "adaptation": "Schema-driven controlled fields; canonical FieldSchema replaces Omni Node; select emits typed values, Base UI owns checkbox behavior. Package-owned import paths; business consumer uses fixed dependency."
+    },
+    {
+      "source": "omni-builder/development/omni-runtime/page/templates/pages/_shared/auto.tsx",
+      "sourceSha256": "5c137a05f877f30c7962901e8b4e0bffb96452e1760c2b1052d6196a84a27ee7",
+      "target": "src/read.tsx",
+      "targetSha256": "a9a47c44c5c47f46d29639ae0bd1a990bf06eb2d8ee642ed153a0ac99a09b3c3",
+      "adaptation": "Schema-driven read-only tables/objects; no editable-row machinery or company-specific sources. Package-owned import paths; business consumer uses fixed dependency."
+    },
+    {
+      "source": "omni-builder/development/omni-runtime/page/templates/pages/_shared/schema.ts",
+      "sourceSha256": "85532ea0ac38f8d80f2713a3467e418d2682a5354e1bcdedbdcf5ae08e4467f7",
+      "target": "src/viz/definition.ts",
+      "adaptation": "Omni protocol/compiler/rendering retained; package-local imports, existing Page lifecycle and SQL API adapter. AutoViz fetching hooks replaced by Viz ownership; English copy and accessible chart labels.",
+      "targetSha256": "85532ea0ac38f8d80f2713a3467e418d2682a5354e1bcdedbdcf5ae08e4467f7"
+    },
+    {
+      "source": "omni-builder/development/omni-runtime/page/templates/pages/_shared/viz.ts",
+      "sourceSha256": "fa6a4f5459c2fd531335692d824af98f1b62549d003f637a5e44c7750bcbdfdf",
+      "target": "src/viz/compile-query.ts",
+      "adaptation": "Omni protocol/compiler/rendering retained; package-local imports, existing Page lifecycle and SQL API adapter. AutoViz fetching hooks replaced by Viz ownership; English copy and accessible chart labels.",
+      "targetSha256": "f699bebc1db2d65deb62b2d057baae168d7bed0d48242e890aa12e4c66307a7d"
+    },
+    {
+      "source": "omni-builder/development/omni-runtime/page/templates/pages/_shared/AutoViz.tsx",
+      "sourceSha256": "d008f7b21f5a4e167850f8507cec5d0a9a0ca7f8e088e4858c1caf6de25979e5",
+      "target": "src/viz/AutoViz.tsx",
+      "adaptation": "Omni protocol/compiler/rendering retained; package-local imports, existing Page lifecycle and SQL API adapter. AutoViz fetching hooks replaced by Viz ownership; English copy and accessible chart labels.",
+      "targetSha256": "77b77fa4665920cba752a2b8030bbcf8b50d774ab2f0a337915b787c1a039724"
+    }
+  ]
+}

@@ -1,21 +1,13 @@
 import React from 'react';
-import {createRoot} from 'react-dom/client';
-import type {PageContext} from './sdk/runtime';
 import {page,type TalentParams,type TalentState} from './page.schema';
-import {PortalRoot} from './components/portal';
-import {AutoObject} from './components/fields';
-import {AutoTable} from './components/read';
-import {usePageQuery} from './components/page';
-import {Button,Card,PageShell,Loading,ErrorState} from './components/ui';
+import {mountPage,usePageContext,usePageQuery} from '@recruitment/page';
+import {AutoObject} from '@recruitment/page/fields';
+import {AutoTable} from '@recruitment/page/read';
+import {Button,Card,PageShell,Loading,ErrorState} from '@recruitment/page/ui';
 import './style.css';
-type Context=PageContext<TalentParams,TalentState>;
-export function mount(element:HTMLElement,context:Context){
-  const root=createRoot(element);
-  element.classList.add('page-root');
-  root.render(<PortalRoot element={element}><Talent context={context}/></PortalRoot>);
-  return()=>{root.unmount();element.classList.remove('page-root');};
-}
-function Talent({context}:{context:Context}){
+export const mount=mountPage(Talent);
+function Talent(){
+  const context=usePageContext<TalentParams,TalentState>();
   const load=React.useCallback(({availability,...params}:TalentParams)=>context.api<TalentState>('recruitment/api/talent/list',{...params,...(availability?{availability}:{})}),[context]);
   const query=usePageQuery(context,load),{params,data,loading,error}=query;
   return <PageShell title={context.page.title} description="Search your talent pool and explore candidate profiles.">

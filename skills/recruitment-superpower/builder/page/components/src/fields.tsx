@@ -2,7 +2,7 @@
 import {useId,useState,useEffect} from 'react';
 import {Checkbox} from '@base-ui/react/checkbox';
 import {Check} from 'lucide-react';
-import type {FieldSchema,ObjectSchema} from '../sdk/schema';
+import type {FieldSchema,ObjectSchema} from './contracts/schema';
 import {controlKind} from './schema';
 import {Field,Input,controlCls} from './ui';
 import {Select,SelectTrigger,SelectValue,SelectContent,SelectItem} from './select';

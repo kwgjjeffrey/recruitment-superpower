@@ -1,0 +1,9 @@
+@import "tailwindcss" source(".");
+@import "@recruitment/page/theme.css";
+@source "../node_modules/@recruitment/page/src";
+
+.page-root{--border:#e1e7df;--background:#f6f8f5;--primary:#31876c;--foreground:#223b34;--muted-foreground:#72827b}
+.page-viz>.grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+.page-viz [data-viz-mark=stat]>div{padding:20px 22px}.page-viz [data-viz-mark=stat] .text-2xl{font-size:32px;color:#2c634e}
+.page-viz .viz-filters [id$=-hint]{display:none}
+@media(max-width:760px){.page-viz>.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.page-viz [data-viz-mark]:not([data-viz-mark=stat]){grid-column:span 2}}

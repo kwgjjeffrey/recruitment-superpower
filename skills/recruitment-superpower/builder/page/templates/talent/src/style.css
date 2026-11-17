@@ -1,16 +1,3 @@
-@import "tailwindcss";
-@theme inline {
-  --color-background:var(--background);--color-foreground:var(--foreground);
-  --color-card:var(--card);--color-popover:var(--card);--color-popover-foreground:var(--foreground);
-  --color-primary:var(--primary);--color-primary-foreground:var(--primary-foreground);
-  --color-muted:var(--muted);--color-muted-foreground:var(--muted-foreground);
-  --color-border:var(--border);--color-input:var(--border);--color-ring:var(--primary);
-  --color-destructive:var(--destructive);--color-secondary:var(--muted);--color-secondary-foreground:var(--foreground);
-  --radius-md:0.5rem;
-}
-.page-root {
-  --background:#fafbf9;--foreground:#24332e;--card:#fff;--primary:#275947;--primary-foreground:#fff;
-  --muted:#edf3ee;--muted-foreground:#5c6c63;--border:#c9d6cc;--destructive:#b42318;
-  --z-floating:50;--shadow-float:0 8px 24px #24332e1a;
-  min-height:100vh;background:var(--background);color:var(--foreground);font:14px/1.5 system-ui;
-}
+@import "tailwindcss" source(".");
+@import "@recruitment/page/theme.css";
+@source "../node_modules/@recruitment/page/src";

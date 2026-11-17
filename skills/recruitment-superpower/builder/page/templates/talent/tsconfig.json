@@ -15,8 +15,6 @@
     "noEmit": true
   },
   "include": [
-    "src",
-    "tooling",
-    "vite.config.ts"
+    "src"
   ]
 }

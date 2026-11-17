@@ -1,0 +1,47 @@
+{
+  "name": "@recruitment/page",
+  "private": true,
+  "type": "module",
+  "bin": {
+    "recruitment-page": "tooling/run_page_command.mjs"
+  },
+  "exports": {
+    ".": "./src/page.tsx",
+    "./schema": "./src/contracts/schema.ts",
+    "./contract": "./src/contracts/contract.ts",
+    "./portable": "./src/contracts/portable.ts",
+    "./runtime": "./src/contracts/runtime.ts",
+    "./fields": "./src/fields.tsx",
+    "./read": "./src/read.tsx",
+    "./query": "./src/query.ts",
+    "./controls": "./src/schema.ts",
+    "./ui": "./src/ui.tsx",
+    "./viz": "./src/viz/Viz.tsx",
+    "./viz/compile-query": "./src/viz/compile-query.ts",
+    "./viz/sql-source": "./src/viz/sql-source.ts",
+    "./theme.css": "./src/theme.css",
+    "./tooling": "./tooling/check_page_project.ts"
+  },
+  "peerDependencies": {
+    "react": "19.3.0",
+    "react-dom": "19.3.0"
+  },
+  "dependencies": {
+    "@base-ui/react": "1.9.0",
+    "@radix-ui/react-select": "2.4.1",
+    "class-variance-authority": "0.7.1",
+    "cn": "0.5.2",
+    "lucide-react": "1.70.0",
+    "echarts": "5.6.0",
+    "ajv": "8.20.0",
+    "@module-federation/vite": "1.24.1",
+    "vite": "8.3.1",
+    "typescript": "5.9.3",
+    "tsx": "4.23.15",
+    "@types/node": "26.6.6",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "@tailwindcss/vite": "4.3.5",
+    "tailwindcss": "4.3.5"
+  }
+}

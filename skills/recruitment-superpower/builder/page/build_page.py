@@ -17,6 +17,7 @@ ENTRY = Path(__file__).absolute().parents[2]
 sys.path.insert(0, str(ENTRY))
 from utils.runtime_client import request
 from page_project import STATE, digest, inspect_build, read, source_digest, validate_dist, write
+from package_page_components import package_components
 
 
 def call(name, params):
@@ -31,29 +32,62 @@ def sdk():
     return bundled if bundled.is_dir() else ENTRY.parents[1] / 'page-runtime/contracts'
 
 
-def scaffold(directory, name=None, title=None):
+def scaffold(directory, name=None, title=None, template='talent'):
     if directory.exists() and any(directory.iterdir()):
         raise ValueError('Choose an empty project directory.')
     name = name or directory.name.lower().replace(' ', '-')
     if not re.fullmatch(r'[a-z0-9_-]{1,64}', name):
         raise ValueError('Use --name with 1–64 lowercase letters, digits, hyphens or underscores.')
-    shutil.copytree(Path(__file__).parent / 'templates/talent', directory, dirs_exist_ok=True)
-    shutil.copytree(sdk(), directory / 'src/sdk', ignore=shutil.ignore_patterns('AGENTS.md'), dirs_exist_ok=True)
+    shutil.copytree(Path(__file__).parent / 'templates' / template, directory, dirs_exist_ok=True)
     package = read(directory / 'package.json')
+    package['dependencies']['@recruitment/page'] = package_components(directory, sdk())
     package['name'] = name
     package['recruitmentPage'] = {'id': uuid.uuid4().hex, 'name': name}
     write(directory / 'package.json', package)
     if title:
         schema = directory / 'src/page.schema.ts'
-        schema.write_text(schema.read_text().replace("display_name:'Talent Explorer'", 'display_name:' + json.dumps(title)))
+        schema.write_text(re.sub(r"display_name:'[^']*'", lambda _: 'display_name:' + json.dumps(title), schema.read_text(), count=1))
     print(json.dumps({'directory': str(directory), 'name': name, 'next': 'Edit src/page.schema.ts and src/page.tsx; then build, publish and verify.'}))
 
 
 def check(directory):
-    for item in read(directory / 'component-sources.json')['files']:
-        if digest((directory / item['target']).read_bytes()) != item['targetSha256']:
-            raise ValueError('Review the component source and update its provenance: ' + item['target'])
+    # Existing source-copy projects retain their own gates and remain buildable.
+    manifest = directory / 'component-sources.json'
+    if manifest.is_file():
+        for item in read(manifest)['files']:
+            if digest((directory / item['target']).read_bytes()) != item['targetSha256']:
+                raise ValueError('Review the component source and update its provenance: ' + item['target'])
     subprocess.run(['npm', 'run', 'check'], cwd=directory, check=True)
+
+
+def update_components(directory):
+    package_path = directory / 'package.json'
+    package = read(package_path)
+    previous = package.get('dependencies', {}).get('@recruitment/page', '')
+    if not re.fullmatch(r'file:vendor/recruitment-page-[a-f0-9]{16}\.tgz', previous):
+        raise ValueError('This project has no Builder-managed component dependency. Create a new project and port its business files.')
+    before = package_path.read_bytes()
+    lock = directory / 'package-lock.json'
+    lock_before = lock.read_bytes() if lock.is_file() else None
+    archives_before = set((directory / 'vendor').glob('recruitment-page-*.tgz'))
+    current = package_components(directory, sdk())
+    package['dependencies']['@recruitment/page'] = current
+    write(package_path, package)
+    try:
+        subprocess.run(['npm', 'install', '--no-audit', '--no-fund'], cwd=directory, check=True)
+    except subprocess.SubprocessError:
+        package_path.write_bytes(before)
+        if lock_before is not None:
+            lock.write_bytes(lock_before)
+        else:
+            lock.unlink(missing_ok=True)
+        generated = directory / current.removeprefix('file:')
+        if generated not in archives_before:
+            generated.unlink(missing_ok=True)
+        raise
+    if current != previous:
+        (directory / previous.removeprefix('file:')).unlink(missing_ok=True)
+    print(json.dumps({'status': 'updated', 'dependency': current, 'businessSource': 'preserved', 'next': 'Check/build and verify the affected workflow before publishing.'}))
 
 
 def build(directory):
@@ -135,11 +169,13 @@ def verify(directory, instance=None, browser=False, params=None):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     subs = parser.add_subparsers(dest='command', required=True)
-    for operation in ['new', 'check', 'build', 'publish', 'verify']:
+    for operation in ['new', 'check', 'build', 'publish', 'verify', 'update-components']:
         p = subs.add_parser(operation)
         p.add_argument('directory', type=Path)
         if operation in ('new', 'publish'): p.add_argument('--name')
-        if operation == 'new': p.add_argument('--title')
+        if operation == 'new':
+            p.add_argument('--title')
+            p.add_argument('--template', choices=['talent', 'report'], default='talent')
         if operation == 'publish': p.add_argument('--version')
         if operation == 'verify':
             p.add_argument('--instance')
@@ -150,8 +186,9 @@ def main():
     subs.add_parser('activate').add_argument('build_id')
     args = parser.parse_args()
     directory = args.directory.expanduser().absolute() if hasattr(args, 'directory') else None
-    if args.command == 'new': scaffold(directory, args.name, args.title)
+    if args.command == 'new': scaffold(directory, args.name, args.title, args.template)
     elif args.command == 'check': check(directory)
+    elif args.command == 'update-components': update_components(directory)
     elif args.command == 'build': build(directory)
     elif args.command == 'publish': publish(directory, args.name, args.version)
     elif args.command == 'verify':

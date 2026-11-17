@@ -1,5 +1,5 @@
 /** Read-only Omni AutoObject/AutoTable pattern. Columns come from the same returns schema. */
-import type {FieldSchema,ObjectSchema} from '../sdk/schema';
+import type {FieldSchema,ObjectSchema} from './contracts/schema';
 import {EmptyState} from './ui';
 export function AutoRead({field,value}:{field:FieldSchema;value:unknown}) {
   if(value===null||value===undefined||value==='')return <span className="text-muted-foreground">—</span>;
