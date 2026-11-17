@@ -335,6 +335,9 @@ def install(home, target, manifest_url, origin, port):
         activation.parent.mkdir(parents=True, exist_ok=True)
         required_skill_files = [file.relative_to(skill) for file in skill.rglob('*') if file.is_file()]
         repair_activation = activation.exists() and any(not (activation / 'skill' / file).is_file() for file in required_skill_files)
+        native_picker = runtime / 'Recruitment Path Picker.app'
+        if activation.exists() and native_picker.is_dir():
+            repair_activation = repair_activation or not (activation / 'skill/local-runtime/bin/Recruitment Path Picker.app/Contents/MacOS/ats-daemon').is_file()
         if not activation.exists() or repair_activation:
             with tempfile.TemporaryDirectory(prefix=".activation-", dir=activation.parent) as temporary:
                 staged = Path(temporary) / "release"
@@ -343,6 +346,8 @@ def install(home, target, manifest_url, origin, port):
                 binary = staged / "skill/local-runtime/bin/ats-daemon"
                 binary.parent.mkdir(parents=True)
                 binary.symlink_to(runtime / "ats-daemon")
+                if native_picker.is_dir():
+                    (binary.parent / native_picker.name).symlink_to(native_picker, target_is_directory=True)
                 previous = prior.get('previous') if repair_activation and prior else str((home / "current").resolve()) if prior else None
                 receipt = {
                     "name": NAME, "manifestSha256": identity, "manifestUrl": manifest_url,
