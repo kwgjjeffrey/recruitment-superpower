@@ -47,15 +47,15 @@
       "source": "omni-builder/development/omni-runtime/page/templates/pages/_shared/auto.tsx",
       "sourceSha256": "5c137a05f877f30c7962901e8b4e0bffb96452e1760c2b1052d6196a84a27ee7",
       "target": "src/fields.tsx",
-      "targetSha256": "bdceae9fbb0e550b8e5519f36143b7b4579a72405a38eedaaeb4f15e36d9e2fa",
-      "adaptation": "Schema-driven controlled fields; canonical FieldSchema replaces Omni Node; select emits typed values, Base UI owns checkbox behavior. Package-owned import paths; business consumer uses fixed dependency."
+      "targetSha256": "54174d5a4f3e8a79c525c013b971024c4e0476ca69e475c3b991ae45b4cf59d4",
+      "adaptation": "Schema-driven controlled fields; canonical FieldSchema replaces Omni Node; select emits typed values, Base UI owns checkbox behavior. Package-owned import paths; business consumer uses fixed dependency. Live selects consume declared observed value/label sources; typed acceptance remains shared with Agents."
     },
     {
       "source": "omni-builder/development/omni-runtime/page/templates/pages/_shared/auto.tsx",
       "sourceSha256": "5c137a05f877f30c7962901e8b4e0bffb96452e1760c2b1052d6196a84a27ee7",
       "target": "src/read.tsx",
-      "targetSha256": "a9a47c44c5c47f46d29639ae0bd1a990bf06eb2d8ee642ed153a0ac99a09b3c3",
-      "adaptation": "Schema-driven read-only tables/objects; no editable-row machinery or company-specific sources. Package-owned import paths; business consumer uses fixed dependency."
+      "targetSha256": "d6d0e84e5003b599f6dea8a0c21671aa96051079822938cf8b2db1dbe93aebd8",
+      "adaptation": "Schema-driven read-only tables/objects; no editable-row machinery or company-specific sources. Package-owned import paths; business consumer uses fixed dependency. Optional cell rendering composes existing controls for metric drilldown; column declarations remain schema-owned."
     },
     {
       "source": "omni-builder/development/omni-runtime/page/templates/pages/_shared/schema.ts",
@@ -77,6 +77,13 @@
       "target": "src/viz/AutoViz.tsx",
       "adaptation": "Omni protocol/compiler/rendering retained; package-local imports, existing Page lifecycle and SQL API adapter. AutoViz fetching hooks replaced by Viz ownership; English copy and accessible chart labels.",
       "targetSha256": "77b77fa4665920cba752a2b8030bbcf8b50d774ab2f0a337915b787c1a039724"
+    },
+    {
+      "source": "omni-builder/development/omni-runtime/page/components/ui/drawer.tsx",
+      "sourceSha256": "fa2120e7e1e1ab0a6885d4e3c2fc858265cfa8dda115416db574bd0e090e33bd",
+      "target": "src/drawer.tsx",
+      "targetSha256": "c8ae7fffb3fb0d75b986a827bb2024d1fb1d4a334180906e56ebc7bc0c6c20f3",
+      "adaptation": "Preserved Radix Dialog modal, Escape and focus behavior. Reuse the existing Page portal/theme; English labels and lucide icon. No runner or host adapter."
     }
   ]
 }

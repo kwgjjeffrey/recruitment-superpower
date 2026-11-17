@@ -17,3 +17,4 @@
 .page-root{--chart-1:#31876c;--chart-2:#9cbda9;--chart-3:#d1ad62;--chart-4:#839dbd;--chart-5:#ad91b2;--chart-6:#b88971;--chart-7:#73a4a6;--chart-8:#bdba83;--chart-axis:#7b8c84;--chart-grid:#edf1ed;--chart-surface:#fff;}
 .page-viz .viz-filters{display:flex;align-items:end;gap:16px;margin-bottom:20px;padding:16px;border:1px solid var(--border);border-radius:8px;background:var(--card)}
 .page-viz .viz-filters>.grid{flex:1;grid-template-columns:repeat(auto-fit,minmax(160px,1fr))}.page-viz .viz-data{margin-top:16px;font-size:12px;color:var(--muted-foreground)}.page-viz pre{overflow:auto;max-height:400px;font-size:11px;white-space:pre-wrap}.page-viz [data-viz-mark=stat]>div{height:100%}.page-viz .viz-filters [id$=-hint]{font-size:11px}@media(max-width:700px){.page-viz .viz-filters{flex-wrap:wrap}.page-viz .viz-filters>.grid{flex-basis:100%}}
+@import './viz/metric-report.css';

@@ -7,18 +7,29 @@ import ts from 'typescript';
 import {compilePortablePage} from '../src/contracts/portable';
 import {assertControls} from '../src/schema';
 import {assertSqlViz,vizView} from '../src/viz/page-schema';
+import {assertMetricReport,metricReportView} from '../src/viz/metric-report';
 const library=fileURLToPath(new URL('..',import.meta.url)).replace(/\/$/,'');
 const walk=(dir:string):string[]=>readdirSync(dir,{withFileTypes:true}).flatMap(e=>e.isDirectory()?walk(join(dir,e.name)):[join(dir,e.name)]);
 export async function checkProject(root=process.cwd()){
   root=resolve(root);
   const {page}=await tsImport(pathToFileURL(join(root,'src/page.schema.ts')).href,import.meta.url);
   const publication=compilePortablePage(page);assertControls(page.views.main.params);
+  for(const [name,field] of Object.entries(page.views.main.params.properties) as [string,any][]){
+    if(field.ui?.optionsFrom){
+      const source=page.views.main.returns.properties[field.ui.optionsFrom];
+      if(source?.type!=='array'||source.items?.properties?.value?.type!=='string'||source.items?.properties?.label?.type!=='string')throw new Error(`${name} live choices must name observed value/label rows in returns.`);
+    }
+  }
   const definitions=join(root,'src/page.viz.ts');
   if(existsSync(definitions)){
     const module=await tsImport(pathToFileURL(definitions).href,import.meta.url);
     for(const def of Object.values(module).filter((v:any)=>v?.kind==='viz') as any[]){
       assertSqlViz(def);const view=vizView(def);
       if(JSON.stringify(page.views.main.params)!==JSON.stringify(view.params)||JSON.stringify(page.views.main.returns)!==JSON.stringify(view.returns))throw new Error('page.viz.ts must describe this main view through vizView().');
+    }
+    for(const def of Object.values(module).filter((v:any)=>v?.kind==='metric-report') as any[]){
+      assertMetricReport(def);const view=metricReportView(def);
+      if(JSON.stringify(page.views.main.params)!==JSON.stringify(view.params)||JSON.stringify(page.views.main.returns)!==JSON.stringify(view.returns))throw new Error('page.viz.ts metric report must describe this main view through metricReportView().');
     }
   }
   const approved=new Set<string>();

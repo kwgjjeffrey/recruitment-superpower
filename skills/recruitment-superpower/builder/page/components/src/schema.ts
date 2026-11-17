@@ -3,7 +3,10 @@ import type {FieldSchema,ObjectSchema} from './contracts/schema';
 export function controlKind(field:FieldSchema) {
   const widget=field.ui?.widget;
   if(widget==='hidden')return 'hidden';
-  if(field.ui?.optionsFrom)throw new Error('Dynamic options need a control adapter and observable options; they cannot fall back to text.');
+  if(field.ui?.optionsFrom){
+    if(widget!=='select'||field.type!=='string')throw new Error('Live choices require the select adapter and string values.');
+    return 'select';
+  }
   if(field.enum&&(widget===undefined||widget==='select'))return 'select';
   if(field.type==='string'&&(!widget||['search','text','textarea'].includes(widget)))return widget==='textarea'?'textarea':'text';
   if(['number','integer'].includes(String(field.type))&&(!widget||widget==='text'))return 'number';
@@ -18,11 +21,12 @@ export function assertControls(schema:ObjectSchema) {
       if(!field.ui?.label?.trim()&&kind!=='hidden')throw new Error('A visible label is required.');
       if(field.ui?.inputType&& !['email','tel'].includes(field.ui.inputType))throw new Error('Use an approved temporal adapter.');
       if(kind==='select') {
-        if(!field.enum?.length)throw new Error('Select requires a nonempty enum.');
-        for(const empty of ['',null])if(field.enum.includes(empty)&&field.default!==empty)
+        if(!field.ui?.optionsFrom&&!field.enum?.length)throw new Error('Select requires a nonempty enum or observed choice source.');
+        if(field.ui?.optionsFrom&&field.default!=='')throw new Error('Live selects clear to the empty string.');
+        for(const empty of ['',null])if(field.enum?.includes(empty)&&field.default!==empty)
           throw new Error('A clearing choice must equal the declared default (accept clears to default).');
         const options=field.ui?.options;
-        if(options&&(options.length!==field.enum.length||options.some(o=>!field.enum!.includes(o.value)||!o.label.trim())||new Set(options.map(o=>o.value)).size!==options.length))
+        if(options&&(!field.enum||options.length!==field.enum.length||options.some(o=>!field.enum!.includes(o.value)||!o.label.trim())||new Set(options.map(o=>o.value)).size!==options.length))
           throw new Error('Choice values/labels must match the enum exactly.');
       }
       if(kind==='object')assertControls(field as ObjectSchema);

@@ -1,6 +1,6 @@
 # Portable page development and release
 
-Build a frontend that calls existing registered APIs; API orchestration belongs in the frontend. The same compiled MF module runs in the independent page runner and inside ATS. Analytics reports are one use of this mechanism. Read the relevant API contracts before implementing calls. The default scaffold includes Talent search. Use `new ... --template report` for an SQL visualization example; both use the same Page protocol, compilation and publication.
+Build a frontend that calls existing registered APIs; API orchestration belongs in the frontend. The same compiled MF module runs in the independent page runner and inside ATS. Analytics reports are one use of this mechanism. Read the relevant API contracts before implementing calls. The default scaffold includes Talent search. Use `new ... --template report` for an SQL visualization example; `--template funnel` starts from the activity-based Application funnel with exact count drilldown. All use the same Page protocol, compilation and publication.
 
 ## Create and develop
 

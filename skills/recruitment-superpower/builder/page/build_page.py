@@ -175,7 +175,7 @@ def main():
         if operation in ('new', 'publish'): p.add_argument('--name')
         if operation == 'new':
             p.add_argument('--title')
-            p.add_argument('--template', choices=['talent', 'report'], default='talent')
+            p.add_argument('--template', choices=['talent', 'report', 'funnel'], default='talent')
         if operation == 'publish': p.add_argument('--version')
         if operation == 'verify':
             p.add_argument('--instance')

@@ -1,6 +1,7 @@
 /** Read-only Omni AutoObject/AutoTable pattern. Columns come from the same returns schema. */
 import type {FieldSchema,ObjectSchema} from './contracts/schema';
 import {EmptyState} from './ui';
+import type {ReactNode} from 'react';
 export function AutoRead({field,value}:{field:FieldSchema;value:unknown}) {
   if(value===null||value===undefined||value==='')return <span className="text-muted-foreground">—</span>;
   if(field.type==='array')return field.items?.type==='object'
@@ -10,8 +11,8 @@ export function AutoRead({field,value}:{field:FieldSchema;value:unknown}) {
   const display=field.ui?.labels?.[String(value)]??(typeof value==='boolean'?(value?'Yes':'No'):String(value));
   return <span>{display}{field.semantic?.unit?' '+field.semantic.unit:''}</span>;
 }
-export function AutoTable({field,rows,empty}:{field:FieldSchema;rows:Record<string,unknown>[];empty?:string}) {
+export function AutoTable({field,rows,empty,renderCell}:{field:FieldSchema;rows:Record<string,unknown>[];empty?:string;renderCell?:(key:string,value:unknown,row:Record<string,unknown>)=>ReactNode|undefined}) {
   if(!rows.length)return <EmptyState>{empty}</EmptyState>;
   const columns=Object.entries((field.items as ObjectSchema).properties).filter(([,f])=>f.ui?.widget!=='hidden');
-  return <div className="max-h-[65vh] overflow-auto rounded-lg border border-border"><table className="w-full border-collapse text-sm"><caption className="sr-only">{field.description}</caption><thead className="sticky top-0 bg-muted text-left"><tr>{columns.map(([key,f])=><th key={key} scope="col" className="whitespace-nowrap border-b border-border px-4 py-3 font-medium">{f.ui?.label??f.description}</th>)}</tr></thead><tbody>{rows.map((row,index)=><tr key={String(row.id??index)}>{columns.map(([key,f])=><td key={key} className="min-w-32 border-b border-border px-4 py-3 align-top"><AutoRead field={f} value={row[key]}/></td>)}</tr>)}</tbody></table></div>;
+  return <div className="max-h-[65vh] overflow-auto rounded-lg border border-border"><table className="w-full border-collapse text-sm"><caption className="sr-only">{field.description}</caption><thead className="sticky top-0 bg-muted text-left"><tr>{columns.map(([key,f])=><th key={key} scope="col" className="whitespace-nowrap border-b border-border px-4 py-3 font-medium">{f.ui?.label??f.description}</th>)}</tr></thead><tbody>{rows.map((row,index)=><tr key={String(row.id??index)}>{columns.map(([key,f])=><td key={key} className="min-w-32 border-b border-border px-4 py-3 align-top">{renderCell?.(key,row[key],row)??<AutoRead field={f} value={row[key]}/>}</td>)}</tr>)}</tbody></table></div>;
 }
