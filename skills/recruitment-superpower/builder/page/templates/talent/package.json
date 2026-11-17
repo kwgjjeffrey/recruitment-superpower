@@ -3,8 +3,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "check": "tsc --noEmit",
-    "build": "vite build"
+    "check": "tsc --noEmit && tsx tooling/check.ts",
+    "build": "vite build",
+    "semantics": "tsx tooling/check.ts --semantics"
   },
   "dependencies": {
     "react": "19.3.0",
@@ -12,13 +13,19 @@
     "@base-ui/react": "1.9.0",
     "ajv": "8.20.0",
     "class-variance-authority": "0.7.1",
-    "cn": "0.5.2"
+    "cn": "0.5.2",
+    "@radix-ui/react-select": "2.4.1",
+    "lucide-react": "1.70.0"
   },
   "devDependencies": {
     "@module-federation/vite": "1.24.1",
     "vite": "8.3.1",
     "typescript": "5.9.3",
     "@types/react": "19.3.0",
-    "@types/react-dom": "19.3.0"
+    "@types/react-dom": "19.3.0",
+    "tsx": "4.23.15",
+    "@types/node": "26.6.6",
+    "@tailwindcss/vite": "4.3.5",
+    "tailwindcss": "4.3.5"
   }
 }

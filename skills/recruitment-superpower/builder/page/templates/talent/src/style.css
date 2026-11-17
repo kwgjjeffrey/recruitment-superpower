@@ -1,1 +1,16 @@
-.talent-app{font:14px/1.5 system-ui;color:#24332e;max-width:1100px;margin:auto;padding:36px 28px}.talent-app .eyebrow{font-size:11px;letter-spacing:.15em;color:#547468}.talent-app h1{font:500 36px/1.2 Georgia,serif;margin:12px 0}.talent-app header p{color:#6b7872}.talent-app .filters{display:grid;grid-template-columns:1fr auto;gap:8px;margin:30px 0 16px}.talent-app label{grid-column:1/-1;font-weight:600}.talent-app input{width:100%;box-sizing:border-box;padding:11px;border:1px solid #b4c8bc;border-radius:7px;background:white;font:inherit}.talent-app button{border:1px solid #b4c8bc;border-radius:7px;padding:9px 16px;background:white;color:#275947;font:inherit;cursor:pointer}.talent-app button:disabled{opacity:.45;cursor:default}.talent-app :focus-visible{outline:3px solid #abd2bd;outline-offset:2px}.talent-app .table-scroll{overflow:auto;border:1px solid #dbe4dd;border-radius:9px;background:white}.talent-app table{border-collapse:collapse;width:100%;min-width:600px}.talent-app th{text-align:left;font-size:12px;background:#edf3ee;color:#51625a}.talent-app th,.talent-app td{padding:13px 16px;border-bottom:1px solid #edf0eb}.talent-app td:first-child{font-weight:600}.talent-app footer{display:flex;gap:8px;margin-top:16px}@media(max-width:600px){.talent-app{padding:24px 14px}.talent-app h1{font-size:30px}}
+@import "tailwindcss";
+@theme inline {
+  --color-background:var(--background);--color-foreground:var(--foreground);
+  --color-card:var(--card);--color-popover:var(--card);--color-popover-foreground:var(--foreground);
+  --color-primary:var(--primary);--color-primary-foreground:var(--primary-foreground);
+  --color-muted:var(--muted);--color-muted-foreground:var(--muted-foreground);
+  --color-border:var(--border);--color-input:var(--border);--color-ring:var(--primary);
+  --color-destructive:var(--destructive);--color-secondary:var(--muted);--color-secondary-foreground:var(--foreground);
+  --radius-md:0.5rem;
+}
+.page-root {
+  --background:#fafbf9;--foreground:#24332e;--card:#fff;--primary:#275947;--primary-foreground:#fff;
+  --muted:#edf3ee;--muted-foreground:#5c6c63;--border:#c9d6cc;--destructive:#b42318;
+  --z-floating:50;--shadow-float:0 8px 24px #24332e1a;
+  min-height:100vh;background:var(--background);color:var(--foreground);font:14px/1.5 system-ui;
+}

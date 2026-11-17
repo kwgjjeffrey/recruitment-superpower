@@ -1,5 +1,5 @@
 {
-  "selection": "Omni semantic fields were evaluated. This API-only starter reuses the ATS shadcn/Base UI search Input and Button adapters and the shared page schema/accept/provide. No new field implementation.",
+  "selection": "Selected Omni schema-driven AutoInput/AutoObject/AutoTable and page primitives. Controls use copied shadcn Input/Button and Omni Radix Select; Base UI owns checkbox behavior. Portable adapters use ATS canonical JSON Schema and PageContext, without Omni company APIs or a second state registry. Unsupported widgets fail the build.",
   "files": [
     {
       "source": "frontend/src/components/ui/input.tsx",
@@ -18,6 +18,41 @@
       "sourceSha256": "55bbdc94cef3e0c8a8bba386e94f97228dd2c967fe61466fc565378890550c08",
       "target": "src/utils.js",
       "targetSha256": "55bbdc94cef3e0c8a8bba386e94f97228dd2c967fe61466fc565378890550c08"
+    },
+    {
+      "source": "frontend/src/components/omni/ui/select.tsx",
+      "sourceSha256": "dcb38750e727006ce0820df0c85d4e2e3081eb86174adb56c3a4f1bb262886d3",
+      "target": "src/components/select.tsx",
+      "targetSha256": "3c70cd1916d7cebf50fcc885536d3a6ed395a83d1929ec9cee7825d0b1d5baaa",
+      "adaptation": "Preserved Radix behavior and scoped portal/theme; use lucide icons and local primitive paths."
+    },
+    {
+      "source": "omni-builder/development/omni-runtime/page/templates/pages/_shared/ui.tsx",
+      "sourceSha256": "ecb73973c84c448299cc8f72450259c741dbd6cc8cdfaeaa92f8822a9c029b67",
+      "target": "src/components/ui.tsx",
+      "targetSha256": "932c454d9e0707ca47aac7ee20807836b735b7f067819ea8238c2ef43edc0e2e",
+      "adaptation": "Selected Field/Card/PageShell/loading/error patterns; English copy, existing shadcn controls and explicit retry."
+    },
+    {
+      "source": "omni-builder/development/omni-runtime/page/templates/pages/_shared/portal.tsx",
+      "sourceSha256": "06c0723ce271c93f0a824d77cb89807b4532ef92547af9a99013f170dc8207f2",
+      "target": "src/components/portal.tsx",
+      "targetSha256": "ff6731bae56c616285a3b20ea3d56b219964e9ab016c39766d49f92ed750ba39",
+      "adaptation": "Only the independent document theme root; no ATS canvas, positioning engine or global style injection."
+    },
+    {
+      "source": "omni-builder/development/omni-runtime/page/templates/pages/_shared/auto.tsx",
+      "sourceSha256": "5c137a05f877f30c7962901e8b4e0bffb96452e1760c2b1052d6196a84a27ee7",
+      "target": "src/components/fields.tsx",
+      "targetSha256": "320c99e6354431c42278b4edf82dd6545bb20412f0559c0a3bd65bb93410afae",
+      "adaptation": "Schema-driven controlled fields; canonical FieldSchema replaces Omni Node; select emits typed values, Base UI owns checkbox behavior."
+    },
+    {
+      "source": "omni-builder/development/omni-runtime/page/templates/pages/_shared/auto.tsx",
+      "sourceSha256": "5c137a05f877f30c7962901e8b4e0bffb96452e1760c2b1052d6196a84a27ee7",
+      "target": "src/components/read.tsx",
+      "targetSha256": "9e1ebb750f61544c8f784ce0a44e96013640e153ef5e6b1bdc1ca0c0c01dd8b3",
+      "adaptation": "Schema-driven read-only tables/objects; no editable-row machinery or company-specific sources."
     }
   ]
 }
