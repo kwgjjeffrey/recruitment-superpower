@@ -25,7 +25,7 @@ def digest(content):
 
 
 def source_digest(directory):
-    excluded = {'node_modules', 'dist', '.git', STATE, '.DS_Store', '__pycache__'}
+    excluded = {'node_modules', 'dist', '.git', STATE, '.reference', '.DS_Store', '__pycache__'}
     files = []
     for source in sorted(directory.rglob('*')):
         relative = source.relative_to(directory)
@@ -37,6 +37,25 @@ def source_digest(directory):
             files.append((relative.as_posix(), digest(source.read_bytes())))
     return digest(json.dumps(files, separators=(',', ':')).encode())
 
+
+
+def source_files(directory):
+    """Publish project inputs without local state, environments or dependency trees."""
+    roots = {'src', 'sdk', 'tooling', 'vendor', 'public'}
+    root_files = {'package.json', 'package-lock.json', 'index.html', 'component-sources.json', 'README.md'}
+    extensions = {'.ts', '.tsx', '.js', '.jsx', '.mjs', '.cjs', '.json', '.css', '.html', '.md', '.yaml', '.yml', '.tgz', '.svg', '.png', '.jpg', '.jpeg', '.woff', '.woff2'}
+    result = []
+    for source in sorted(directory.rglob('*')):
+        path = source.relative_to(directory)
+        if any(part.startswith('.') or part in {'node_modules','dist','target','__pycache__'} for part in path.parts): continue
+        if path.parts[0] not in roots and not (len(path.parts)==1 and (path.name in root_files or path.name.startswith(('vite.config.', 'tsconfig')))): continue
+        if source.is_symlink(): raise ValueError('Source files must not be symlinks: '+str(path))
+        if source.is_file() and source.suffix.lower() in extensions:
+            content=source.read_bytes()
+            result.append({'path':path.as_posix(),'size':len(content),'sha256':digest(content)})
+    if not result or len(result)>1000 or sum(f['size'] for f in result)>50*1024*1024:
+        raise ValueError('Source snapshot must fit 50 MiB / 1,000 project files.')
+    return result
 
 def file_manifest(directory):
     if not directory.is_dir() or directory.is_symlink():

@@ -12,6 +12,6 @@ npx --yes skills add kwgjjeffrey/recruitment-superpower --global --agent codex -
 sh "${RECRUITMENT_SKILL_DIR:-$HOME/.agents/skills/recruitment-superpower}/setup.sh"
 ```
 
-Keep page source in the directory chosen by the user. Builder starts from the Talent API example; customize the schema and frontend API orchestration for the requested page or report. Compile locally and publish only static output through the daemon. No SSH, developer credentials or service deployment belongs in a user's page publication.
+Keep page source in the directory chosen by the user. Builder starts from the Talent API example; customize the schema and frontend API orchestration for the requested page or report. Compile locally and publish static output plus a separate version-bound source snapshot through the daemon. Use the Page module’s `fork` command to build another page from a published page’s source. No SSH, developer credentials or service deployment belongs in a user's page publication.
 
 Use the [Page module](../recruitment-superpower/builder/page/SKILL.md) for pages/reports, the [Table module](../recruitment-superpower/builder/table/SKILL.md) for tables/imports/data updates, and the [Wiki module](../recruitment-superpower/builder/wiki/SKILL.md) for local knowledge drafts. Wiki indexing/publication is not defined yet. Each module gives concrete commands through the registered Superpower entry.

@@ -1,12 +1,12 @@
 {
-  "bundleVersion": "0.2.40",
-  "sourceCommit": "ee650e3dd504c12c944692405bdd9e03c597c6d2",
-  "manifestUrl": "https://recruitment.zhiyuanwangluo.online/downloads/recruitment-superpower/versions/0.2.40/manifest.json",
-  "skillArchiveSha256": "87ef6249f8881884f2254b45a9c760fe1673ec55ccced7f9c51da20867418321",
-  "skillVersion": "0.2.39",
+  "bundleVersion": "0.2.43",
+  "sourceCommit": "3bac77fd4ec0fcd9134f2ce43beb2848f4c67065",
+  "manifestUrl": "https://recruitment.zhiyuanwangluo.online/downloads/recruitment-superpower/versions/0.2.43/manifest.json",
+  "skillArchiveSha256": "eaf9cb27116683eebbc0e3ffdfaa823794e5617bf02c1f70f654734a7d3e28a7",
+  "skillVersion": "0.2.42",
   "files": {
     "setup.sh": "2f1cf6a910ae6ed509dec069c86859bca75c4b3eeb0e0d5d0ccc27f4ea3c3a8e",
-    "skill-project.json": "9e485e75a3855858e9d1175c4b2c4cfbf5dd850501151566f5022c1d66483766",
+    "skill-project.json": "2336ea0590f7cadfff89417e65d8047de15f8a2ced7a444c0fe0bea19be8a4bd",
     "SKILL.md": "e6ebf9bc9d7b59163f3ac7a1eede45801646b0d2630689fe0d4d9f8d7856bb62",
     "requirements-analysis.txt": "3c1bc818aeb336a9bbc8776e1db86dc1218c17f289d49ec40fc658237c41b07a",
     "setup/SKILL.md": "f96978aea59822b0999a6d3737137be3cba344ae7417c8f859150a9e5c983499",
@@ -42,13 +42,14 @@
     "action/SKILL.md": "d22700d59de93b0670f604ec1831e02486c3464254f13c7413507eda59d8877e",
     "action/call_a_function.py": "ba20f1ca7fdb294446b26e27d285fcdf39448a105b36e85dfdf49c2d99595d0a",
     "builder/SKILL.md": "3187142350f70a0c2e8e9ed0256b58bf8f255ed946bd57ab03e930d02c190938",
-    "builder/page/build_page.py": "5ac75bf86ac4d29e55408fa9ad2d408f8869e67c758bb40d6bb0d1000d467924",
+    "builder/page/build_page.py": "81fa85166fec68c35b40051fd7938d21518d8cf6f4eec5dc3864131a65b4efe2",
     "builder/page/components.md": "7a355746e4bd66f8b37fc53575764e7dcf717c68630445fbd11376ccdc0cf3f9",
     "builder/page/package_page_components.py": "a6988633d5821dcc66c7da774c382e58fbcde655e9e4f223a2cced5627fc5e25",
-    "builder/page/page_project.py": "9628bf59ec95e4391569a687021111745c23fd18492c83a28570a4e6cd04fd5c",
-    "builder/page/SKILL.md": "ac86883075fcec60603361c82b8bd522f1e396419078d026176dc3e6c45e6af8",
+    "builder/page/page_project.py": "8d5f91085abc4e992ccac94d2e47caf54daa1060f87048547666731e367d557f",
+    "builder/page/SKILL.md": "c35e361510d9d9614dc49727c27a93aa512f74ca0e8d6c6c50cb037686b09af6",
     "builder/page/visualization.md": "49cdc405fea6192cb7a0edb647edfac1fa1963fd2507754fca7148c6fbf5310a",
     "builder/page/semantics.md": "6520447898b9107697a1039224208bc2c4ce92835b3bda49d214dc53c47fd5bd",
+    "builder/page/dependencies-lock.json": "92ad6214cf3a294dbacaa168bbbea4ea0e9993c2afbf336348af7aa5a76c8a7b",
     "builder/page/tooling/run_page_command.mjs": "ce79fb2cf8f1fefd6a82ccf18f69bde835e7fe8a92948d76eb99f25a6f93ba51",
     "builder/page/tooling/run_page_command.ts": "9143efc6276f7d65d1ad9a299ee27e38316ea875bc435e94a35de9d4ca8fe8ca",
     "builder/page/tooling/check_page_project.ts": "780b278af4ae1b1edc53b390a82946743e9bd3952b423dbf4b5258267205999d",
@@ -116,5 +117,5 @@
     "builder/table/import_table.py": "437af27628a917e37024850f1cdd907b7b514cd19b372fac0db940608652477b",
     "builder/table/SKILL.md": "c0fe1af28e7787dfbef72745ea928f8907e263d0b20de1bcd49f345ee451a20e"
   },
-  "builderSkillSha256": "023d5785c60086215d7d75e7be4cd1604ca2df9af7fb7c48671706b1b1eeaeee"
+  "builderSkillSha256": "8273fcbbb4fd6234fd4df25c10d3d236b82d0bf6e743c329d5dd4fe67eb466c6"
 }
