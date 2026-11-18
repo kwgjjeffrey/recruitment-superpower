@@ -5,7 +5,7 @@ import {DATE_RANGE_PATTERN,DATE_RANGE_PRESETS} from '../date-range-value';
 export type MetricDefinition={
   kind:'metric-report';description:string;data_source:SqlVizDataSource;
   metrics:readonly {key:string;label:string;group:string;description:string}[];
-  dimensions:readonly {key:string;column:string;labelColumn:string;label:string}[];
+  dimensions:readonly {key:string;column:string;labelColumn:string;label:string;pathColumn?:string;choices?:SqlVizDataSource}[];
   entityLabel:string;
   unknownTimeMetric?:string;
 };
@@ -28,6 +28,10 @@ export function assertMetricReport(def:MetricDefinition) {
  if(def.unknownTimeMetric&&!def.metrics.some(m=>m.key===def.unknownTimeMetric))throw new Error('Unknown-time drilldown must name a declared metric.');
  if(!def.dimensions.length||new Set(def.dimensions.map(d=>d.key)).size!==def.dimensions.length)throw new Error('Dimension keys must be unique.');
  for(const metric of def.metrics)if(!valid(metric.key)||!metric.label||!metric.description)throw new Error('Metrics need stable keys, labels and counting rules.');
+ for(const dim of def.dimensions){
+  if(dim.pathColumn&&(!valid(dim.pathColumn)||!def.data_source.verified_columns[dim.pathColumn]))throw new Error('Hierarchy dimensions require a declared JSON ancestor path.');
+  if(dim.choices&&(dim.choices.kind!=='sql'||!dim.choices.sql.trim()||!dim.choices.verified_columns.value||!dim.choices.verified_columns.label))throw new Error('Dimension choices require SQL with declared value and label columns.');
+ }
  for(const dim of def.dimensions)if(!valid(dim.key)||!valid(dim.column)||!valid(dim.labelColumn)||!def.data_source.verified_columns[dim.column]||!def.data_source.verified_columns[dim.labelColumn])throw new Error('Dimensions must reference declared source columns.');
 }
 export function metricReportView(def:MetricDefinition):PageView {

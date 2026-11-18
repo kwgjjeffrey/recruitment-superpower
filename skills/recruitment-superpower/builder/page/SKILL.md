@@ -80,3 +80,5 @@ For a dependency-based project, update the standard components/tooling without r
 ```
 
 This replaces only the Builder-owned dependency archive and dependency/lock entries, installs it and preserves business source and project identity. Install failure restores the previous package/lock metadata. Rebuild and verify affected workflows before publication. Already published pages keep their immutable build. Older source-copy projects use the fresh-project migration described above; they are not overwritten.
+
+Metric dimensions may declare `pathColumn` (a stored JSONB ancestor-ID array including self) and a SQL `choices` source with declared `value`/`label` columns. Parent selection uses containment; include configured parents in choices even when no entity is directly attributed to them. Do not infer historical attribution or add recursive hierarchy reads. Both sources join the same report statement and authorization boundary.

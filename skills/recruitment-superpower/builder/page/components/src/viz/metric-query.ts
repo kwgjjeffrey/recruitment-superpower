@@ -21,7 +21,7 @@ export function compileMetricReport(def:MetricDefinition,p:Record<string,unknown
   case 'all':window=`${date}<=${now}`;break;
   default:{const range=customDateRange(period);if(!range)throw new Error('Invalid report period');window=`${date}>=DATE ${literal(range.from)} AND ${date}<DATE ${literal(range.to)}+INTERVAL '1 day' AND ${date}<=${now}`;}
  }
- const filter=def.dimensions.map(d=>p['filter_'+d.key]?`COALESCE(${col(d.column)}::text,'__unassigned__')=${literal(p['filter_'+d.key])}`:'TRUE').join(' AND ');
+ const filter=def.dimensions.map(d=>p['filter_'+d.key]?(d.pathColumn&&p['filter_'+d.key]!=='__unassigned__'?`${col(d.pathColumn)} @> ${literal(JSON.stringify([String(p['filter_'+d.key])]))}::jsonb`:`COALESCE(${col(d.column)}::text,'__unassigned__')=${literal(p['filter_'+d.key])}`):'TRUE').join(' AND ');
  const dimension=def.dimensions.find(d=>p.grouping===d.key||p.grouping==='time_'+d.key);
  if(!dimension&&p.grouping!=='time')throw new Error('Invalid grouping');
  const withTime=p.grouping==='time'||String(p.grouping).startsWith('time_');
@@ -56,7 +56,7 @@ export function compileMetricReport(def:MetricDefinition,p:Record<string,unknown
  (SELECT count(*) FROM ${detailSource} WHERE ${scope} AND entity_id::text=${literal(p.evidenceEntity)}) AS evidence_total,
  (SELECT count(DISTINCT entity_id) FROM unknown_events${def.unknownTimeMetric?' WHERE metric='+literal(def.unknownTimeMetric):''}) AS unknown_total,
  CURRENT_TIMESTAMP::text AS queried_at,
- ${def.dimensions.map(d=>`${aggregate(`SELECT DISTINCT COALESCE(${col(d.column)}::text,'__unassigned__') AS value,COALESCE(${col(d.labelColumn)},'Unassigned') AS label FROM source ORDER BY label,value`,['value','label'])} AS options_${d.key}`).join(',')}`;
+ ${def.dimensions.map(d=>`${aggregate(d.choices?`SELECT value::text,label FROM (${d.choices.sql}) dimension_choices UNION SELECT '__unassigned__','Unassigned' WHERE EXISTS(SELECT 1 FROM source WHERE ${col(d.column)} IS NULL) ORDER BY label,value`:`SELECT DISTINCT COALESCE(${col(d.column)}::text,'__unassigned__') AS value,COALESCE(${col(d.labelColumn)},'Unassigned') AS label FROM source ORDER BY label,value`,['value','label'])} AS options_${d.key}`).join(',')}`;
  return query;
 }
 function integer(value:unknown){const n=Number(value??0);if(!Number.isSafeInteger(n)||n<0)throw new Error('The report returned an invalid count');return n;}

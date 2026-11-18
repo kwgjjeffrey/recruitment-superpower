@@ -11,13 +11,13 @@ const metrics=[
  ]),
 ];
 export const report=metricReport({
- description:'Application funnel based on recorded activities. Activity time counts the period’s events; cohort mode follows Applications created in the period. Counts are distinct Applications, not activity counts. Rounds mean completed interview occurrences, not management stages. Optional steps and direct results mean counts need not decrease monotonically. Current Job/owner attribution; result corrections restate historical reporting. Every count opens its exact qualifying Applications and activities.',
+ description:'Application funnel based on recorded activities. Activity time counts the period’s events; cohort mode follows Applications created in the period. Counts are distinct Applications, not activity counts. Rounds mean completed interview occurrences, not management stages. Optional steps and direct results mean counts need not decrease monotonically. Current Job/owner/channel attribution; channel filters include descendants via stored UUID paths, unknown historical channels remain Unassigned; result corrections restate historical reporting. Every count opens its exact qualifying Applications and activities.',
  entityLabel:'Applications',unknownTimeMetric:'test_completed',metrics,
- dimensions:[{key:'job',column:'job_id',labelColumn:'job_label',label:'Job'},{key:'owner',column:'owner_id',labelColumn:'owner_name',label:'Job owner'}],
+ dimensions:[{key:'job',column:'job_id',labelColumn:'job_label',label:'Job'},{key:'owner',column:'owner_id',labelColumn:'owner_name',label:'Job owner'},{key:'channel_source',column:'channel_source_id',labelColumn:'channel_source_label',pathColumn:'channel_source_path',label:'Channel source',choices:{kind:'sql',sql:'SELECT id AS value,label FROM "recruitment/tables/channel_sources"',verified_columns:{value:'string',label:'string'}}}],
  data_source:{kind:'sql',sql:`SELECT application_id AS entity_id,talent_name AS entity_name,application_url AS entity_url,
  application_created_at AS cohort_at,event_at,metric_key AS metric,activity_id AS event_id,
  activity_label AS event_label,result,interview_number AS sequence,job_id,
- concat_ws(' · ',job_title,owner_name) AS job_label,owner_id,owner_name
+ concat_ws(' · ',job_title,owner_name) AS job_label,owner_id,owner_name,channel_source_id,channel_source_label,channel_source_path
  FROM "recruitment/tables/application_funnel_events"`,
- verified_columns:{entity_id:'string',entity_name:'string',entity_url:'string',cohort_at:'timestamp',event_at:'timestamp',metric:'string',event_id:'string',event_label:'string',result:'string',sequence:'integer',job_id:'string',job_label:'string',owner_id:'string',owner_name:'string'}},
+ verified_columns:{entity_id:'string',entity_name:'string',entity_url:'string',cohort_at:'timestamp',event_at:'timestamp',metric:'string',event_id:'string',event_label:'string',result:'string',sequence:'integer',job_id:'string',job_label:'string',owner_id:'string',owner_name:'string',channel_source_id:'string',channel_source_label:'string',channel_source_path:'string'}},
 });
