@@ -40,21 +40,21 @@
       "source": "omni-builder/development/omni-runtime/page/templates/pages/_shared/portal.tsx",
       "sourceSha256": "06c0723ce271c93f0a824d77cb89807b4532ef92547af9a99013f170dc8207f2",
       "target": "src/portal.tsx",
-      "targetSha256": "ff6731bae56c616285a3b20ea3d56b219964e9ab016c39766d49f92ed750ba39",
+      "targetSha256": "591ff6ecb59b85c4d37a0b4c1f0610708d781bc860671e34a8da9a48869fdd3e",
       "adaptation": "Only the independent document theme root; no ATS canvas, positioning engine or global style injection. Package-owned import paths; business consumer uses fixed dependency."
     },
     {
       "source": "omni-builder/development/omni-runtime/page/templates/pages/_shared/auto.tsx",
       "sourceSha256": "5c137a05f877f30c7962901e8b4e0bffb96452e1760c2b1052d6196a84a27ee7",
       "target": "src/fields.tsx",
-      "targetSha256": "54174d5a4f3e8a79c525c013b971024c4e0476ca69e475c3b991ae45b4cf59d4",
+      "targetSha256": "62991e2a819e19f63875c0124806dc78e556242720bc9c7fb00e6f163ec96ab4",
       "adaptation": "Schema-driven controlled fields; canonical FieldSchema replaces Omni Node; select emits typed values, Base UI owns checkbox behavior. Package-owned import paths; business consumer uses fixed dependency. Live selects consume declared observed value/label sources; typed acceptance remains shared with Agents."
     },
     {
       "source": "omni-builder/development/omni-runtime/page/templates/pages/_shared/auto.tsx",
       "sourceSha256": "5c137a05f877f30c7962901e8b4e0bffb96452e1760c2b1052d6196a84a27ee7",
       "target": "src/read.tsx",
-      "targetSha256": "d6d0e84e5003b599f6dea8a0c21671aa96051079822938cf8b2db1dbe93aebd8",
+      "targetSha256": "346a67cd168165971c2cd72933aaf012e6d6a7b310437417de43ee72b8c17885",
       "adaptation": "Schema-driven read-only tables/objects; no editable-row machinery or company-specific sources. Package-owned import paths; business consumer uses fixed dependency. Optional cell rendering composes existing controls for metric drilldown; column declarations remain schema-owned."
     },
     {
@@ -84,6 +84,27 @@
       "target": "src/drawer.tsx",
       "targetSha256": "c8ae7fffb3fb0d75b986a827bb2024d1fb1d4a334180906e56ebc7bc0c6c20f3",
       "adaptation": "Preserved Radix Dialog modal, Escape and focus behavior. Reuse the existing Page portal/theme; English labels and lucide icon. No runner or host adapter."
+    },
+    {
+      "source": "omni-builder/development/omni-runtime/page/templates/pages/_shared/ui/daterange.tsx",
+      "sourceSha256": "ccd0c81e50b17f6f4fba488ee6c55910339b2ae58399ef3b060cdc739c4e2fa0",
+      "target": "src/date-range.tsx",
+      "targetSha256": "64237ac2d5ffc7432c5464cafe4bdec08cda01e5c3d662852e8fe1e1c9e3460e",
+      "adaptation": "Retained Omni preset/custom inclusive value protocol, DayPicker range rendering, two-click/reverse draft selection. English labels/icons, selected report time zone, all-date key and disabled state; existing shadcn/Base UI Popover replaces manual FloatingLayer dismissal and owns Escape/focus/collision. No calendar grid is authored here."
+    },
+    {
+      "source": "omni-builder/development/omni-runtime/page/templates/pages/_shared/ui/daterange.css",
+      "sourceSha256": "8ee0b0a355595b100db187ca08f24a3b32797709469163387ee2a9f1a4bccceb",
+      "target": "src/date-range.css",
+      "targetSha256": "90068f2a955aa12b89dfe7c5f6ffd6224096150dd88a3c62124a0dee85b0520c",
+      "adaptation": "Mother DayPicker styles retained; compact Page toolbar, English presets and narrow single-month popup."
+    },
+    {
+      "source": "frontend/src/components/ui/popover.tsx",
+      "sourceSha256": "5fecff622f4eecc06e8be32bface11c59d529be5c0a1484c78c9e40530b2b7d0",
+      "target": "src/popover.tsx",
+      "targetSha256": "43a3e2e43d4d4b832f9fc779e9c8a825db838a87191451a37f7fd27fdd974ac0",
+      "adaptation": "Existing shadcn/Base UI Popover with the shared Page portal/theme and collision padding; no custom overlay engine."
     }
   ]
 }

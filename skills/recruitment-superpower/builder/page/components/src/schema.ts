@@ -3,6 +3,7 @@ import type {FieldSchema,ObjectSchema} from './contracts/schema';
 export function controlKind(field:FieldSchema) {
   const widget=field.ui?.widget;
   if(widget==='hidden')return 'hidden';
+  if(widget==='daterange'&&field.type==='string'&&!field.enum)return 'daterange';
   if(field.ui?.optionsFrom){
     if(widget!=='select'||field.type!=='string')throw new Error('Live choices require the select adapter and string values.');
     return 'select';

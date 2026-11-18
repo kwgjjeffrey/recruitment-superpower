@@ -26,7 +26,7 @@ export type FieldSchema = {
   /** Rendering hints stay in the application and are removed from published semantics. */
   ui?: {
     label: string;
-    widget?: "search" | "select" | "hidden" | "text" | "textarea" | "tags" | "pills" | "multi-choice" | "datetime" | "date" | "time" | "tabs" | "radio" | "month" | "checkbox-group" | "checkbox" | "person" | "department";
+    widget?: "search" | "select" | "hidden" | "text" | "textarea" | "tags" | "pills" | "multi-choice" | "datetime" | "date" | "time" | "tabs" | "radio" | "month" | "checkbox-group" | "checkbox" | "person" | "department" | "daterange";
     placeholder?: string;
     hideLabel?: boolean;
     inlineTags?: boolean;

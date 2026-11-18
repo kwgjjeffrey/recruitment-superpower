@@ -2,10 +2,12 @@ import React from 'react';
 import {usePageContext,usePageQuery} from '../page';
 import {AutoObject} from '../fields';
 import {AutoTable} from '../read';
-import {Button,Card,Loading,ErrorState} from '../ui';
+import {Button,Loading,ErrorState} from '../ui';
+import {RefreshCw,RotateCcw,SlidersHorizontal} from 'lucide-react';
+import {Popover,PopoverTrigger,PopoverContent,PopoverTitle} from '../popover';
 import {Drawer,DrawerContent,DrawerTitle,DrawerDescription} from '../drawer';
 import {defaults} from '../contracts/contract';
-import type {FieldSchema} from '../contracts/schema';
+import type {FieldSchema,ObjectSchema} from '../contracts/schema';
 import {querySql} from './sql-source';
 import {sameDeclaration} from './page-schema';
 import {metricReportView,type MetricDefinition} from './metric-report';
@@ -51,15 +53,20 @@ export function MetricReport({definition:def}:{definition:MetricDefinition}) {
  const selected=def.metrics.find(m=>m.key===p.metricKey);
  const stamp=(value:string)=>{if(!value)return 'Unknown time';const date=new Date(value.replace(' ','T').replace(/(\.\d{3})\d+/, '$1').replace(/([+-]\d{2})$/, '$1:00'));return Number.isNaN(date.valueOf())?value:new Intl.DateTimeFormat('en-GB',{dateStyle:'medium',timeStyle:'short',timeZone:String(p.timezone)}).format(date);};
  const matrixField:FieldSchema={type:'array',description:'Grouped metric counts',items:{type:'object',description:'One group',properties:{label:{type:'string',description:'Group',ui:{label:'Group'}},...Object.fromEntries(def.metrics.map(m=>[m.key,{type:'integer',description:m.description,ui:{label:m.label}}]))}}};
+ const fields=(keys:string[]):ObjectSchema=>({...view.params,properties:Object.fromEntries(keys.map(key=>[key,view.params.properties[key]])),required:keys});
+ const primaryFields=fields(['period','timeMode',...def.dimensions.map(d=>'filter_'+d.key),'grouping']);
+ const advancedFields=fields(['grain','timezone']);
  const detailField:FieldSchema={type:'array',description:'Applications contributing to this metric',items:{type:'object',description:'Contributing entity',properties:{name:{type:'string',description:'Application'},dimensions:{type:'string',description:'Job / owner'},firstMatch:{type:'string',description:'First matching time'},matchingEvents:{type:'integer',description:'Matching activities'}}}};
  const evidenceField:FieldSchema={type:'array',description:'Qualifying activity evidence',items:{type:'object',description:'Actual activity',properties:{label:{type:'string',description:'Activity'},at:{type:'string',description:'Event time'},result:{type:'string',description:'Result'},sequence:{type:'string',description:'Actual interview number'}}}};
  return <section className="metric-report" aria-label="Metric report" aria-busy={query.loading}>
-  <Card><AutoObject schema={view.params} value={p} sources={(matrix??{}) as Record<string,unknown>} onChange={accept}/><div className="mt-4 flex flex-wrap items-center gap-3"><Button variant="outline" onClick={query.retry} disabled={query.loading}>Refresh</Button><Button variant="ghost" onClick={()=>accept(defaults(context.schema))}>Reset filters</Button>{matrix&&<span className="text-xs text-muted-foreground">Queried {stamp(matrix.queriedAt)} · {String(p.timezone)}</span>}</div></Card>
+  <div className="metric-filterbar" role="group" aria-label="Report filters"><AutoObject schema={primaryFields} value={p} sources={(matrix??{}) as Record<string,unknown>} onChange={accept} compact/><div className="metric-filter-actions">
+   <Popover><PopoverTrigger aria-label="More options" title="Time grain and time zone" render={<Button variant="outline" size="icon"/>}><SlidersHorizontal size={15}/></PopoverTrigger><PopoverContent className="metric-options" align="end"><PopoverTitle className="mb-3 font-medium">Report options</PopoverTitle><AutoObject schema={advancedFields} value={p} onChange={accept}/>{matrix&&<p className="mt-3 text-xs text-muted-foreground">Queried {stamp(matrix.queriedAt)}</p>}</PopoverContent></Popover>
+   <Button variant="ghost" size="icon" aria-label="Refresh" title="Refresh" onClick={query.retry} disabled={query.loading}><RefreshCw size={15}/></Button><Button variant="ghost" size="icon" aria-label="Reset filters" title="Reset filters" onClick={()=>accept(defaults(context.schema))}><RotateCcw size={15}/></Button>
+  </div></div>
   {query.error&&<ErrorState error={query.error} retry={query.retry}/>}
   {!matrix&&query.loading?<Loading/>:matrix&&<>
-   <div className="metric-summary" aria-label="Metric totals">{matrix.totals.map((m,i)=><Button key={m.metric} variant="outline" className="metric-summary-card" onClick={event=>open(event.currentTarget,m.metric)} disabled={query.loading} title={def.metrics[i].description}><span className="metric-category">{def.metrics[i].group}</span><span>{m.label}</span><strong>{count(m.count)}</strong><span className="metric-spark" style={{width:`${Math.max(...matrix.totals.map(t=>t.count))?100*m.count/Math.max(...matrix.totals.map(t=>t.count)):0}%`}}/></Button>)}</div>
    {matrix.unknownTimeCount>0&&def.unknownTimeMetric&&<p className="metric-notice"><Button variant="ghost" onClick={event=>open(event.currentTarget,def.unknownTimeMetric!,'',true)} disabled={query.loading}>{count(matrix.unknownTimeCount)} {def.entityLabel.toLowerCase()} with unknown event time · inspect across all dates</Button></p>}
-   <div className="metric-matrix"><AutoTable field={matrixField} rows={matrix.groups.map(g=>({id:g.key,label:g.label,...g.counts}))} empty="No activity matches these filters." renderCell={(key,value,row)=>key==='label'?<strong>{String(value)}</strong>:<Button variant="ghost" aria-label={`${def.metrics.find(m=>m.key===key)?.label}: ${value} · ${row.label}`} onClick={event=>open(event.currentTarget,key,String(row.id))} disabled={query.loading}>{count(Number(value))}</Button>}/></div>
+   <div className="metric-matrix"><AutoTable field={matrixField} summary={{id:'',label:'Sum',...Object.fromEntries(matrix.totals.map(m=>[m.metric,m.count]))}} rows={matrix.groups.map(g=>({id:g.key,label:g.label,...g.counts}))} empty="No activity matches these filters." renderCell={(key,value,row)=>key==='label'?<strong>{String(value)}</strong>:<Button variant="ghost" className="metric-count" aria-label={`${def.metrics.find(m=>m.key===key)?.label}: ${value} · ${row.label}`} title={def.metrics.find(m=>m.key===key)?.description} onClick={event=>open(event.currentTarget,key,String(row.id))} disabled={query.loading}>{count(Number(value))}</Button>}/></div>
    <Pagination label="Group pages" page={Number(p.groupPage)} total={matrix.groupTotal} size={GROUP_SIZE} onChange={n=>accept({groupPage:n,metricKey:'',groupKey:'',detailPage:0,evidenceEntity:'',evidencePage:0,unknownTime:false})}/>
   </>}
   <Drawer open={Boolean(selected)} onOpenChange={open=>{if(!open)accept({metricKey:'',groupKey:'',detailPage:0,evidenceEntity:'',evidencePage:0,unknownTime:false});}}>

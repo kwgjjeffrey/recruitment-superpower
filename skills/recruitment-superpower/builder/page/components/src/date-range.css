@@ -1,0 +1,104 @@
+/* 日期区间面板：保留 react-day-picker 的日期语义，视觉对齐 Omni Token。 */
+.daterange-presets {
+  display: flex;
+  width: 112px;
+  flex-shrink: 0;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px;
+  border-right: 1px solid var(--border);
+  background: var(--card);
+}
+
+.daterange-preset {
+  min-height: 32px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--foreground);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 20px;
+  text-align: left;
+}
+
+.daterange-preset:hover { background: var(--muted); }
+.daterange-preset-selected,
+.daterange-preset-selected:hover {
+  background: color-mix(in srgb, var(--primary) 7%, white);
+  color: var(--primary);
+}
+.daterange-preset:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--ring) 20%, transparent);
+}
+
+.daterange-calendar.rdp-root {
+  --rdp-accent-color: var(--primary);
+  --rdp-accent-background-color: color-mix(in srgb, var(--primary) 7%, white);
+  --rdp-day-width: 32px;
+  --rdp-day-height: 32px;
+  --rdp-day_button-width: 30px;
+  --rdp-day_button-height: 30px;
+  --rdp-day_button-border-radius: 4px;
+  --rdp-selected-border: 0;
+  --rdp-nav_button-width: 28px;
+  --rdp-nav_button-height: 28px;
+  --rdp-nav-height: 32px;
+  --rdp-weekday-opacity: 1;
+  --rdp-weekday-padding: 6px 0;
+  padding: 12px;
+  color: var(--foreground);
+  font-size: 13px;
+}
+
+.daterange-calendar .rdp-months { display: flex; position: relative; flex-flow: row nowrap; gap: 16px; }
+.daterange-calendar .rdp-month { position: relative; }
+.daterange-calendar button { border: 0; background: transparent; }
+.daterange-calendar .rdp-nav { inset-inline: 0; justify-content: space-between; height: var(--rdp-nav-height); pointer-events: none; }
+.daterange-calendar .rdp-button_previous,
+.daterange-calendar .rdp-button_next {
+  width: var(--rdp-nav_button-width);
+  height: var(--rdp-nav_button-height);
+  border-radius: 4px;
+  color: var(--muted-foreground);
+  pointer-events: auto;
+  transition: background-color 150ms, color 150ms;
+}
+.daterange-calendar .rdp-button_previous:hover,
+.daterange-calendar .rdp-button_next:hover { background: var(--muted); color: var(--foreground); }
+.daterange-calendar .rdp-button_previous:focus-visible,
+.daterange-calendar .rdp-button_next:focus-visible,
+.daterange-calendar .rdp-day_button:focus-visible {
+  z-index: 1;
+  outline: none;
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--ring) 20%, transparent);
+}
+.daterange-calendar .rdp-chevron { display: block; width: 18px; height: 18px; fill: currentColor; }
+.daterange-calendar .rdp-month_caption {
+  height: var(--rdp-nav-height);
+  align-items: center;
+  justify-content: center;
+  color: var(--foreground);
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 20px;
+}
+.daterange-calendar .rdp-weekday { color: var(--muted-foreground); font-size: 13px; font-weight: 400; }
+.daterange-calendar .rdp-day_button {
+  color: var(--foreground);
+  cursor: pointer;
+  transition: background-color 150ms, color 150ms;
+}
+.daterange-calendar .rdp-day:not(.rdp-selected) .rdp-day_button:hover { background: var(--muted); }
+.daterange-calendar .rdp-selected { font-size: inherit; font-weight: 600; }
+.daterange-calendar .rdp-range_start .rdp-day_button,
+.daterange-calendar .rdp-range_end .rdp-day_button { color: var(--primary-foreground); }
+.daterange-calendar .rdp-outside { opacity: 0.4; }
+.daterange-calendar .rdp-today:not(.rdp-selected) { color: var(--primary); font-weight: 600; }
+
+/* Page adaptation: the existing Base UI Popover owns placement and dismissal. */
+.date-range-trigger{height:32px;gap:6px;padding-inline:8px;font-size:12px;justify-content:flex-start}.date-range-trigger>span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.date-range-trigger svg{flex-shrink:0}
+.date-range-popup{display:flex;padding:0;max-width:calc(100vw - 16px);overflow:hidden}.date-range-popup .daterange-presets{width:126px}.date-range-popup .daterange-preset{height:auto;justify-content:flex-start;font-size:12px;white-space:nowrap;flex-shrink:0}.date-range-help{padding:0 12px 12px;font-size:11px;color:var(--muted-foreground)}
+@media(max-width:720px){.date-range-popup{flex-direction:column}.date-range-popup .daterange-presets{width:100%;max-width:300px;flex-direction:row;overflow-x:auto;border-right:0;border-bottom:1px solid var(--border)}.date-range-popup .daterange-calendar.rdp-root{margin-inline:auto}.date-range-popup .daterange-preset{min-height:30px}}

@@ -1,5 +1,6 @@
 import type {ObjectSchema,PageView,FieldSchema} from '../contracts/schema';
 import type {SqlVizDataSource} from './definition';
+import {DATE_RANGE_PATTERN,DATE_RANGE_PRESETS} from '../date-range-value';
 
 export type MetricDefinition={
   kind:'metric-report';description:string;data_source:SqlVizDataSource;
@@ -15,7 +16,7 @@ const array=(description:string,properties:Record<string,FieldSchema>):FieldSche
 function select(description:string,values:Record<string,string>,initial:string):FieldSchema {
  return {type:'string',description,enum:Object.keys(values),default:initial,ui:{label:description,widget:'select',labels:values}};
 }
-export const metricPeriods={last_30d:'Last 30 days',last_90d:'Last 90 days',this_month:'This month',last_month:'Last month',ytd:'Year to date',all:'All dates'};
+export const metricPeriods={...Object.fromEntries(DATE_RANGE_PRESETS),all:'All dates'};
 export function metricReport(definition:Omit<MetricDefinition,'kind'>):MetricDefinition {
  const def={kind:'metric-report' as const,...definition};assertMetricReport(def);return def;
 }
@@ -32,7 +33,7 @@ export function assertMetricReport(def:MetricDefinition) {
 export function metricReportView(def:MetricDefinition):PageView {
  assertMetricReport(def);
  const properties:Record<string,FieldSchema>={
-  period:select('Period',metricPeriods,'last_90d'),
+  period:{type:'string',description:'Inclusive calendar date range YYYY-MM-DD..YYYY-MM-DD, a named preset, or all. Evaluated in the selected time zone.',pattern:DATE_RANGE_PATTERN,default:'last_90d',ui:{label:'Period',widget:'daterange'},semantic:{format:'YYYY-MM-DD..YYYY-MM-DD (inclusive) or '+Object.keys(metricPeriods).join(', ')}},
   timeMode:select('Time basis',{activity:'Activity time',cohort:'New application cohort'},'activity'),
   timezone:select('Time zone',{'Asia/Shanghai':'Asia/Shanghai',UTC:'UTC'},'Asia/Shanghai'),
   grouping:select('Group rows by',{...Object.fromEntries(def.dimensions.map(d=>[d.key,d.label])),time:'Time',...Object.fromEntries(def.dimensions.map(d=>['time_'+d.key,'Time + '+d.label]))},def.dimensions[0].key),

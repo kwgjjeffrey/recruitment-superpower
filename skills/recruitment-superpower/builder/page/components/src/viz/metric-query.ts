@@ -1,4 +1,5 @@
 import type {MetricDefinition} from './metric-report';
+import {customDateRange} from '../date-range-value';
 export const GROUP_SIZE=25,DETAIL_SIZE=25,EVIDENCE_SIZE=20;
 const literal=(value:unknown)=>"'"+String(value??'').replaceAll("'","''")+"'";
 const col=(name:string)=>{if(!/^[a-z_][a-z0-9_]*$/.test(name))throw new Error('Invalid source column');return '"'+name+'"';};
@@ -12,12 +13,13 @@ export function compileMetricReport(def:MetricDefinition,p:Record<string,unknown
  const zone=literal(timezone),now=`(CURRENT_TIMESTAMP AT TIME ZONE ${zone})`,dateColumn=timeMode==='cohort'?'cohort_at':'event_at',date=`(${dateColumn} AT TIME ZONE ${zone})`;
  let window:string;
  switch(period){
-  case 'last_30d':case 'last_90d':window=`${date}>=date_trunc('day',${now})-INTERVAL '${period==='last_30d'?29:89} days' AND ${date}<=${now}`;break;
+  case 'last_7d':case 'last_30d':case 'last_90d':window=`${date}>=date_trunc('day',${now})-INTERVAL '${period==='last_7d'?6:period==='last_30d'?29:89} days' AND ${date}<=${now}`;break;
   case 'this_month':window=`${date}>=date_trunc('month',${now}) AND ${date}<=${now}`;break;
   case 'last_month':window=`${date}>=date_trunc('month',${now})-INTERVAL '1 month' AND ${date}<date_trunc('month',${now})`;break;
   case 'ytd':window=`${date}>=date_trunc('year',${now}) AND ${date}<=${now}`;break;
+  case 'this_quarter':window=`${date}>=date_trunc('quarter',${now}) AND ${date}<=${now}`;break;
   case 'all':window=`${date}<=${now}`;break;
-  default:throw new Error('Invalid report period');
+  default:{const range=customDateRange(period);if(!range)throw new Error('Invalid report period');window=`${date}>=DATE ${literal(range.from)} AND ${date}<DATE ${literal(range.to)}+INTERVAL '1 day' AND ${date}<=${now}`;}
  }
  const filter=def.dimensions.map(d=>p['filter_'+d.key]?`COALESCE(${col(d.column)}::text,'__unassigned__')=${literal(p['filter_'+d.key])}`:'TRUE').join(' AND ');
  const dimension=def.dimensions.find(d=>p.grouping===d.key||p.grouping==='time_'+d.key);

@@ -1,3 +1,5 @@
+@import 'react-day-picker/style.css';
+@import './date-range.css';
 @theme inline {
   --color-background:var(--background);--color-foreground:var(--foreground);
   --color-card:var(--card);--color-popover:var(--card);--color-popover-foreground:var(--foreground);
