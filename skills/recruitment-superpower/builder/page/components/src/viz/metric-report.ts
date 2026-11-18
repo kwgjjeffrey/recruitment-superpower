@@ -44,6 +44,8 @@ export function metricReportView(def:MetricDefinition):PageView {
   :{...text(description),default:value,maxLength:max,ui:{label:description,widget:'hidden'}};
  for(const dim of def.dimensions)properties['filter_'+dim.key]={...text('Filter by '+dim.label),default:'',maxLength:120,ui:{label:dim.label,widget:'select',optionsFrom:'options_'+dim.key}};
  Object.assign(properties,{
+  sortMetric:{...hidden('Metric used to sort every filtered group before pagination',''),enum:['',...def.metrics.map(m=>m.key)]},
+  sortDirection:{...hidden('Group sort direction','desc'),enum:['asc','desc']},
   groupPage:hidden('Zero-based group page',0),metricKey:{...hidden('Selected metric',''),enum:['',...def.metrics.map(m=>m.key)]},
   groupKey:hidden('Selected group; empty means all filtered rows',''),detailPage:hidden('Zero-based entity page',0),
   evidenceEntity:hidden('Entity whose qualifying activities are expanded',''),evidencePage:hidden('Zero-based activity page',0),
@@ -52,6 +54,7 @@ export function metricReportView(def:MetricDefinition):PageView {
  const returns:Record<string,FieldSchema>={
   totals:array('Distinct entities for each metric',{metric:text('Metric key'),label:text('Metric label'),count:integer('Distinct entity count')}),
   groups:array('Grouped metric counts',{key:text('Stable group key'),label:text('Group label'),counts:object('Counts by metric',Object.fromEntries(def.metrics.map(m=>[m.key,integer(m.description)])))}),
+  columnMax:object('Largest group count in each metric across all filtered groups, excluding Sum; fixed heatmap scale across pages',Object.fromEntries(def.metrics.map(m=>[m.key,integer('Largest group count for '+m.label)]))),
   groupTotal:integer('Total number of groups'),unknownTimeCount:integer('Distinct entities with unknown event times; excludes the date filter'),queriedAt:text('Server query time'),
   details:array('Distinct entities contributing to the selected metric',{id:text('Entity ID'),name:text('Entity name'),url:text('Business detail URL'),dimensions:text('Dimension labels'),firstMatch:text('First qualifying time, empty if unknown'),matchingEvents:integer('Number of qualifying activities')}),
   detailTotal:integer('Total distinct entities matching the selected cell'),

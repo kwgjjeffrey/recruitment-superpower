@@ -46,6 +46,7 @@
     "@types/react-dom": "19.3.0",
     "@tailwindcss/vite": "4.3.5",
     "tailwindcss": "4.3.5",
-    "react-day-picker": "10.0.2"
+    "react-day-picker": "10.0.2",
+    "@radix-ui/react-tooltip": "1.4.1"
   }
 }

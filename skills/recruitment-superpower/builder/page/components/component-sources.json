@@ -54,8 +54,8 @@
       "source": "omni-builder/development/omni-runtime/page/templates/pages/_shared/auto.tsx",
       "sourceSha256": "5c137a05f877f30c7962901e8b4e0bffb96452e1760c2b1052d6196a84a27ee7",
       "target": "src/read.tsx",
-      "targetSha256": "346a67cd168165971c2cd72933aaf012e6d6a7b310437417de43ee72b8c17885",
-      "adaptation": "Schema-driven read-only tables/objects; no editable-row machinery or company-specific sources. Package-owned import paths; business consumer uses fixed dependency. Optional cell rendering composes existing controls for metric drilldown; column declarations remain schema-owned."
+      "targetSha256": "7ca435421ad94e57819a9e370ae1d6feea0c0030d2bbda79148809d0f60b7c79",
+      "adaptation": "Schema-driven read-only tables/objects; no editable-row machinery or company-specific sources. Package-owned import paths; business consumer uses fixed dependency. Optional cell rendering composes existing controls for metric drilldown; column declarations remain schema-owned. Controlled server-sorting headers expose aria-sort; optional cell styles preserve shared columns and do not alter data."
     },
     {
       "source": "omni-builder/development/omni-runtime/page/templates/pages/_shared/schema.ts",
@@ -105,6 +105,13 @@
       "target": "src/popover.tsx",
       "targetSha256": "43a3e2e43d4d4b832f9fc779e9c8a825db838a87191451a37f7fd27fdd974ac0",
       "adaptation": "Existing shadcn/Base UI Popover with the shared Page portal/theme and collision padding; no custom overlay engine."
+    },
+    {
+      "source": "omni-builder/development/omni-runtime/page/components/ui/tooltip.tsx",
+      "sourceSha256": "f5041b2608b4cc4ef6379d38ccdc3653c9d82e6e4438e58cdcee1411ad20b83e",
+      "target": "src/tooltip.tsx",
+      "targetSha256": "4dc5c602e8b48a7e6779a1485f0aa7eb18568f2ad191746bbffd52919f460256",
+      "adaptation": "Only package-local import paths; original Radix Tooltip owns hover/focus delay, Escape, collision and accessible description. Existing scoped Page portal retained."
     }
   ]
 }

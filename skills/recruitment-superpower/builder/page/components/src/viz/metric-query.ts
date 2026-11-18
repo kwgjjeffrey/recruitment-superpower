@@ -29,6 +29,11 @@ export function compileMetricReport(def:MetricDefinition,p:Record<string,unknown
  const key=withTime?(dimension?`${bucket}||'|'||COALESCE(${col(dimension.column)}::text,'__unassigned__')`:bucket):`COALESCE(${col(dimension!.column)}::text,'__unassigned__')`;
  const label=withTime?(dimension?`${bucket}||' · '||COALESCE(${col(dimension.labelColumn)},'Unassigned')`:bucket):`COALESCE(${col(dimension!.labelColumn)},'Unassigned')`;
  const counts=def.metrics.map((m,i)=>`count(DISTINCT entity_id) FILTER(WHERE metric=${literal(m.key)}) AS m${i}`);
+ const sortMetric=String(p.sortMetric??''),direction=String(p.sortDirection??'desc');
+ const sortIndex=def.metrics.findIndex(m=>m.key===sortMetric);
+ if(sortMetric&&sortIndex<0)throw new Error('Unknown sort metric');
+ if(!['asc','desc'].includes(direction))throw new Error('Invalid sort direction');
+ const order=sortMetric?`m${sortIndex} ${direction.toUpperCase()},group_key ASC`:'group_key ASC';
  const selected=String(p.metricKey??'');if(selected&&!def.metrics.some(m=>m.key===selected))throw new Error('Unknown metric');
  const scope=`metric=${literal(selected)}${p.groupKey&&!p.unknownTime?' AND group_key='+literal(p.groupKey):''}`;
  const detailSource=p.unknownTime?'unknown_events':'filtered';
@@ -42,7 +47,8 @@ export function compileMetricReport(def:MetricDefinition,p:Record<string,unknown
  members AS (SELECT entity_id,min(entity_name) AS entity_name,min(entity_url) AS entity_url,min(${dimensionLabel}) AS dimensions,min(event_at) AS first_match,count(*) AS event_count FROM ${detailSource} WHERE ${scope} GROUP BY entity_id)
  SELECT
  ${aggregate('SELECT '+counts.join(',')+' FROM filtered',def.metrics.map((_,i)=>'m'+i))} AS totals,
- ${aggregate(`SELECT * FROM grouped ORDER BY group_key LIMIT ${GROUP_SIZE} OFFSET ${page(p.groupPage)*GROUP_SIZE}`,['group_key','group_label',...def.metrics.map((_,i)=>'m'+i)])} AS groups,
+ ${aggregate(`SELECT * FROM grouped ORDER BY ${order} LIMIT ${GROUP_SIZE} OFFSET ${page(p.groupPage)*GROUP_SIZE}`,['group_key','group_label',...def.metrics.map((_,i)=>'m'+i)])} AS groups,
+ ${aggregate('SELECT '+def.metrics.map((_,i)=>`max(m${i}) AS m${i}`).join(',')+' FROM grouped',def.metrics.map((_,i)=>'m'+i))} AS column_max,
  (SELECT count(*) FROM grouped) AS group_total,
  ${aggregate(`SELECT * FROM members ORDER BY entity_name,entity_id LIMIT ${DETAIL_SIZE} OFFSET ${page(p.detailPage)*DETAIL_SIZE}`,['entity_id','entity_name','entity_url','dimensions','first_match','event_count'])} AS details,
  (SELECT count(*) FROM members) AS detail_total,
@@ -59,6 +65,7 @@ export function decodeMetricReport(def:MetricDefinition,row:Record<string,unknow
  return {
   totals:def.metrics.map((m,i)=>({metric:m.key,label:m.label,count:integer(rows('totals')[0]?.[i])})),
   groups:rows('groups').map(r=>({key:r[0],label:r[1],counts:Object.fromEntries(def.metrics.map((m,i)=>[m.key,integer(r[i+2])]))})),groupTotal:integer(row.group_total),
+  columnMax:Object.fromEntries(def.metrics.map((m,i)=>[m.key,integer(rows('column_max')[0]?.[i])])),
   details:rows('details').map(r=>({id:r[0],name:r[1],url:r[2],dimensions:r[3],firstMatch:r[4],matchingEvents:integer(r[5])})),detailTotal:integer(row.detail_total),
   evidence:rows('evidence').map(r=>({id:r[0],label:r[1],at:r[2],result:r[3],sequence:r[4]})),evidenceTotal:integer(row.evidence_total),
   unknownTimeCount:integer(row.unknown_total),queriedAt:String(row.queried_at),
