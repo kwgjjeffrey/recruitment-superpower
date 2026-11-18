@@ -30,8 +30,10 @@ Use `@recruitment/page/fields` for `AutoObject`/`AutoInput`, `/read` for `AutoRe
 
 `Viz` retains Omni’s declaration/query/rendering protocol and uses the same Page state and standard controls. Its SQL client, response handling, request lifecycle, schema normalization and chart renderers are internal implementation. See [Visualization](visualization.md) for the business authoring surface.
 
-`MetricReport` adds a count matrix and exact member/activity drilldowns using the same SQL API, standard Select/Table and the copy-in Omni Radix Drawer. It is Builder-owned and compiles into the published page. See [Metric matrix](visualization.md#metric-matrix-with-exact-drilldown).
+`MetricReport` adds a count matrix and exact member/activity drilldowns using the same SQL API, standard Select, AG Grid Community matrix and the copy-in Omni Radix Drawer. It is Builder-owned and compiles into the published page. See [Metric matrix](visualization.md#metric-matrix-with-exact-drilldown).
 
 `AutoObject compact` renders one row of controls with inline labels and preserves accessible labels and error feedback. Use it for report filter bars; field help remains in schema for Agents. Keep secondary report options in the standard Popover. `AutoTable summary` pins a real aggregate row below the column headings, using the same column declarations and clickable cells. Sum values come from the report totals, not from adding a paginated set of groups.
 
 `AutoTable sorting` renders controlled accessible sort headers from the existing column declaration. It never sorts only the currently loaded page; the query owner supplies globally sorted rows. `cellStyle` permits column heat shading while preserving numeric values and click handlers. The copy-in Omni Radix Tooltip supplies complete truncated labels on hover/focus, with library dismissal and collision behavior.
+
+The metric matrix uses AG Grid Community 36.3.0 at the user’s explicit request. Builder owns the adapter, SQL block loading, global sort and heat scale; AG Grid owns row virtualization, its six-block cache and native pinned header/Sum. Existing AutoTable remains the bounded member/evidence table. No AG Grid implementation or cache service is placed in Page Runtime.

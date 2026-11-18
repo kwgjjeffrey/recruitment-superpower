@@ -5,12 +5,14 @@
 .page-inline-fields [role=combobox]{height:32px;gap:6px;padding-inline:8px;justify-content:flex-start;font-size:12px}.inline-field-label{flex-shrink:0;color:var(--muted-foreground);font-size:11px}
 .page-inline-fields [role=combobox]>span:not(.inline-field-label){min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.page-inline-fields [role=combobox]>span:last-child{margin-left:auto;flex-shrink:0}
 .metric-filter-actions{display:flex;flex-shrink:0;align-items:center;gap:2px}.metric-filter-actions button{width:30px;height:32px}.metric-options{width:310px;max-width:calc(100vw - 16px)}.metric-options>.grid{grid-template-columns:1fr}
-.metric-matrix table th{min-width:130px;max-width:160px;white-space:normal;font-size:.75rem}.metric-matrix table td{min-width:110px;font-variant-numeric:tabular-nums}
-.metric-matrix table thead{z-index:5}.metric-matrix table th:first-child,.metric-matrix table td:first-child{position:sticky;left:0;width:300px;min-width:300px;max-width:300px;background:var(--card);z-index:2;box-shadow:1px 0 var(--border)}.metric-matrix table thead th:first-child{z-index:6;background:var(--muted)}
-.metric-matrix [data-summary-row]{background:var(--muted);font-weight:600}.metric-matrix .metric-count{font-variant-numeric:tabular-nums}.metric-matrix [data-summary-row] .metric-count{font-weight:700}
 .metric-notice{border-left:3px solid var(--primary);font-size:.8rem}.metric-notice button{height:auto;white-space:normal;text-align:left;overflow-wrap:anywhere}
-@media(max-width:600px){.metric-matrix table td:first-child,.metric-matrix table th:first-child{width:200px;min-width:200px;max-width:200px}.metric-filterbar .page-inline-fields{min-width:740px}}
+@media(max-width:600px){.metric-filterbar .page-inline-fields{min-width:740px}}
 
-.metric-group-label{display:block;width:268px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600;outline-offset:3px}.metric-group-tooltip{max-width:min(32rem,calc(100vw - 24px));white-space:normal;overflow-wrap:anywhere;line-height:1.5}
-.metric-matrix .table-sort{width:100%;height:auto;min-height:32px;justify-content:space-between;gap:6px;padding:0;white-space:normal;text-align:left;font:inherit}.table-sort svg{flex-shrink:0}.metric-matrix th[aria-sort=ascending],.metric-matrix th[aria-sort=descending]{color:var(--primary)}
-@media(max-width:600px){.metric-group-label{width:168px}}
+.metric-group-label{display:block;width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600;outline-offset:3px}.metric-group-tooltip{max-width:min(32rem,calc(100vw - 24px));white-space:normal;overflow-wrap:anywhere;line-height:1.5}
+
+/* AG Grid owns its viewport, row virtualization and opaque pinned containers. */
+.metric-grid{height:calc(100dvh - 180px);min-height:560px;width:100%;font-family:system-ui;--ag-background-color:#fff;--ag-header-background-color:#edf3ee;--ag-pinned-row-background-color:#edf3ee}
+.metric-grid .ag-header,.metric-grid .ag-pinned-left-header,.metric-grid .ag-header-viewport{background-color:#edf3ee}
+.metric-grid .ag-grid-pinned-top-rows,.metric-grid .ag-grid-pinned-top-rows .ag-grid-pinned-left-cells,.metric-grid .ag-grid-pinned-top-rows .ag-row,.metric-grid .ag-grid-pinned-top-rows .ag-cell{background-color:#edf3ee}
+.metric-grid .ag-cell{display:flex;align-items:center}.metric-grid .ag-cell-value{width:100%;min-width:0}.metric-grid .metric-group-label{width:100%;max-width:100%;font-weight:600}
+.metric-grid .metric-count{height:100%;min-width:46px;justify-content:flex-start;padding-inline:0}.metric-grid .ag-grid-pinned-top-rows .metric-count{font-weight:700}.metric-grid .ag-header-cell-label{white-space:normal}.metric-grid .ag-row{background-color:#fff}
