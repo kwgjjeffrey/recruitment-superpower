@@ -47,6 +47,8 @@ Semantics selects one authorized data source and sends the original semantic SQL
 
 For Python analysis, install `requirements-analysis.txt` into the interpreter used by the calling program, add the registered Skill entry to `sys.path`, and import `from action.run_sql import run_sql`. `run_sql(sql)` (also named `run(sql)`) returns a pandas DataFrame directly. Empty results retain column names and dtypes; duplicate column names retain each value; nullable integers, exact Decimal values and timestamps retain their meaning. Errors and truncated results raise `SqlError`, never an empty or silently partial DataFrame. SQL types are available in `df.attrs["sql_types"]`. Terminal commands do not require pandas.
 
+Inside the embedded chat, successful page and SQL requests also print an XML `display_to_user` record. Keep this actual script output intact; capture enough tool output for the complete record. The chat renders it as a page shortcut or query-result table, including when reading session history. Keep the normal business reply and terminal results; do not hand-author successful display records in the answer or rerun SQL just to expand a result.
+
 ## Python use
 
 Import `invoke(asset_path, params=None)`, `call(asset_path, params=None)` or `run(sql)` from the corresponding scripts. Page and Function return structured dictionaries synchronously; SQL returns a pandas DataFrame. Requests share automatic startup and authentication. After an interrupted write request, inspect the business result before deciding whether to repeat it.

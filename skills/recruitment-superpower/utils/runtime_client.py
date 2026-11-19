@@ -147,7 +147,7 @@ def _ipc(channel, action):
     raise RuntimeError('The runtime did not respond. Reconnect the application; read page state before retrying a page action.')
 
 
-def request(action):
+def _request(action):
     channel=os.environ.get('ATS_PAGE_BRIDGE')
     context={}
     if channel:
@@ -175,6 +175,13 @@ def request(action):
     opener=urllib.request.build_opener(urllib.request.ProxyHandler({}))
     with opener.open(call,timeout=170) as response:
         return json.load(response, parse_float=Decimal) if action.get('operation') == 'action.sql' else json.load(response)
+
+
+def request(action):
+    result = _request(action)
+    from utils.display_to_user import display_result
+    display_result(action, result)
+    return result
 
 
 def display(action, output='json'):
