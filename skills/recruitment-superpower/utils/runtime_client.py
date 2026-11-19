@@ -178,6 +178,8 @@ def _request(action):
 
 
 def request(action):
+    if action.get('operation') == 'action.page' and action.get('params') == {} and not action.get('open'):
+        action = {**action, 'params': None}
     result = _request(action)
     from utils.display_to_user import display_result
     display_result(action, result)

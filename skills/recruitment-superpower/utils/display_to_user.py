@@ -28,6 +28,10 @@ def display_result(action, result):
     if operation == 'action.sql':
         record = {'type': 'sql', 'sql': action['sql'], 'data': result['data']}
     elif operation == 'action.page':
+        # Reading current state returns complete params too. Only the request
+        # identifies whether fields/navigation were supplied for display.
+        if not action.get('params') and not action.get('open'):
+            return
         record = {'type': 'page', 'data': {key: result[key] for key in ('asset_path', 'section', 'params') if key in result}}
         if 'asset_path' not in record['data'] or not isinstance(record['data'].get('params'), dict):
             return
