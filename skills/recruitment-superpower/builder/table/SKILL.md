@@ -1,6 +1,6 @@
 # Import a personal table
 
-Use this for a local data file the user wants to upload to ATS. Inspect and, if necessary, reshape a copy first. The table uses the user-defined name inside its owner's dedicated `u_<owner UUID without hyphens>` PostgreSQL schema; its complete semantic definition is registered automatically at `users/<authenticated-user-id>/tables/<name>`. Both survive service releases. The server determines ownership; no deployment, database access or owner parameter is needed. Only the owner can discover, query or append today.
+Use this for a local data file the user wants to upload to ATS. Inspect and, if necessary, reshape a copy first. The table uses the user-defined name inside its owner's dedicated `u_<immutable user ID>` PostgreSQL schema; its complete semantic definition is registered automatically at `users/<authenticated-user-id>/tables/<name>`. Both survive service releases. The server determines ownership; no deployment, database access or owner parameter is needed. Only the owner can discover, query or append today.
 
 ```sh
 "${RECRUITMENT_PYTHON:-python3}" "${RECRUITMENT_SKILL_DIR:-$HOME/.agents/skills/recruitment-superpower}/builder/table/import_table.py" inspect /absolute/path/data.csv

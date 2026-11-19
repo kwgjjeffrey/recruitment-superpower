@@ -201,10 +201,22 @@ def verify(directory, instance=None, browser=False, params=None):
     _, files, _ = inspect_build(directory)
     published = read(directory / STATE / 'publication.json')
     active = next((b for b in call('list', {})['builds'] if b['id'] == published['buildId']), None)
-    if not active or not active.get('active') or active.get('assetPath') != published['assetPath']:
+    if not active or not active.get('active'):
         raise ValueError('This publication is not the active build for the authenticated user.')
     if active['files'] != files:
         raise ValueError('The active server file manifest differs from the local build.')
+    if active['assetPath'] != published['assetPath']:
+        old=published['assetPath'];before=old.split('/');after=active['assetPath'].split('/')
+        try:uuid.UUID(before[1])
+        except (ValueError,IndexError):raise ValueError('The saved publication belongs to another asset.')
+        if len(before)!=4 or len(after)!=4 or before[0]!='users' or after[0]!='users' or before[2:]!=after[2:]:
+            raise ValueError('The saved publication belongs to another asset.')
+        # Migrate generated receipts only after the authenticated owner, active
+        # immutable build ID and every compiled file have matched.
+        published.update(assetPath=active['assetPath'],namespace=active['namespace'])
+        for key in ('url','workspaceUrl'):
+            if isinstance(published.get(key),str):published[key]=published[key].replace('/'+old,'/'+active['assetPath'])
+        write(directory / STATE / 'publication.json',published)
     origin = urllib.parse.urlsplit(published['url'])
     if origin.scheme not in ('http', 'https') or (origin.scheme == 'http' and origin.hostname not in ('127.0.0.1', 'localhost')):
         raise ValueError('Static verification requires HTTPS or a loopback test origin.')

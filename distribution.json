@@ -1,12 +1,12 @@
 {
-  "bundleVersion": "0.2.43",
-  "sourceCommit": "3bac77fd4ec0fcd9134f2ce43beb2848f4c67065",
-  "manifestUrl": "https://recruitment.zhiyuanwangluo.online/downloads/recruitment-superpower/versions/0.2.43/manifest.json",
-  "skillArchiveSha256": "eaf9cb27116683eebbc0e3ffdfaa823794e5617bf02c1f70f654734a7d3e28a7",
-  "skillVersion": "0.2.42",
+  "bundleVersion": "0.2.44",
+  "sourceCommit": "3cc13cf34adcb6616825c8da2196e63021d1dca1",
+  "manifestUrl": "https://recruitment.zhiyuanwangluo.online/downloads/recruitment-superpower/versions/0.2.44/manifest.json",
+  "skillArchiveSha256": "eff989a76bbd5540ac03fe0dc2a5b2cfdad71e967060d61137b2ab9fb3fa51e5",
+  "skillVersion": "0.2.43",
   "files": {
     "setup.sh": "2f1cf6a910ae6ed509dec069c86859bca75c4b3eeb0e0d5d0ccc27f4ea3c3a8e",
-    "skill-project.json": "2336ea0590f7cadfff89417e65d8047de15f8a2ced7a444c0fe0bea19be8a4bd",
+    "skill-project.json": "ab8bee89109f2776ae055abd4cba1fbb054d2851e80308e5ceb91cdc0f67b545",
     "SKILL.md": "e6ebf9bc9d7b59163f3ac7a1eede45801646b0d2630689fe0d4d9f8d7856bb62",
     "requirements-analysis.txt": "3c1bc818aeb336a9bbc8776e1db86dc1218c17f289d49ec40fc658237c41b07a",
     "setup/SKILL.md": "f96978aea59822b0999a6d3737137be3cba344ae7417c8f859150a9e5c983499",
@@ -42,7 +42,7 @@
     "action/SKILL.md": "d22700d59de93b0670f604ec1831e02486c3464254f13c7413507eda59d8877e",
     "action/call_a_function.py": "ba20f1ca7fdb294446b26e27d285fcdf39448a105b36e85dfdf49c2d99595d0a",
     "builder/SKILL.md": "3187142350f70a0c2e8e9ed0256b58bf8f255ed946bd57ab03e930d02c190938",
-    "builder/page/build_page.py": "81fa85166fec68c35b40051fd7938d21518d8cf6f4eec5dc3864131a65b4efe2",
+    "builder/page/build_page.py": "6cd98fc4be44c92e8f6530a66fd90f524c5cb2e0995343b84694094b04488dc0",
     "builder/page/components.md": "7a355746e4bd66f8b37fc53575764e7dcf717c68630445fbd11376ccdc0cf3f9",
     "builder/page/package_page_components.py": "a6988633d5821dcc66c7da774c382e58fbcde655e9e4f223a2cced5627fc5e25",
     "builder/page/page_project.py": "8d5f91085abc4e992ccac94d2e47caf54daa1060f87048547666731e367d557f",
@@ -114,8 +114,8 @@
     "builder/page/templates/talent/src/page.tsx": "7292352f4071caf5823e11a40139de99e26daf63939bb3c0bf5a6a93091fe7eb",
     "builder/wiki/SKILL.md": "9fa3dcdc652f2d35f9a70fa1ff33937b68a9962c70c536d9e89a7b9df25169fc",
     "builder/table/requirements-import.txt": "00458089771fcf2142c3b608e24ef922458dce2a182ff5940ecea03532b095e5",
-    "builder/table/import_table.py": "437af27628a917e37024850f1cdd907b7b514cd19b372fac0db940608652477b",
-    "builder/table/SKILL.md": "c0fe1af28e7787dfbef72745ea928f8907e263d0b20de1bcd49f345ee451a20e"
+    "builder/table/import_table.py": "aa010a86a8a8c583bc522274a1a5aa955b8d0d0fd08563bae7271140af1ddae9",
+    "builder/table/SKILL.md": "c1449a4990c4f87e524f4112bddd7d2a09e421947997f8200d56aef1e8cd2a1f"
   },
   "builderSkillSha256": "8273fcbbb4fd6234fd4df25c10d3d236b82d0bf6e743c329d5dd4fe67eb466c6"
 }

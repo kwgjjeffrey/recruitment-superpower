@@ -166,7 +166,16 @@ def upload_file(path, name, description='', sheet=None, encoding='utf-8-sig', sc
     namespace=function('namespace',{});owner=namespace['ownerId']
     if receipt.exists():
         state=json.loads(receipt.read_text())
-        if state.get('ownerId')!=owner:raise ValueError('This receipt belongs to another account. Sign in to the original account before retrying.')
+        if state.get('ownerId')!=owner:
+            # A legacy UUID alone proves nothing. Read the current owner's
+            # registry before any write and require the same immutable table.
+            try: UUID(state.get('ownerId',''))
+            except (ValueError,TypeError,AttributeError): raise ValueError('This receipt belongs to another account. Sign in to the original account before retrying.')
+            previous=state.get('table',{})
+            owned=function('list',{})['tables']
+            if not previous.get('id') or not any(t['id']==previous['id'] and t['assetPath']==f'users/{owner}/tables/{name}' for t in owned):
+                raise ValueError('This receipt belongs to another account. Sign in to the original account before retrying.')
+            state['ownerId']=owner
         if not state.get('importKey'):raise ValueError('This is a legacy non-idempotent import receipt. Inspect its actual table before further writes.')
         if state['sha256']!=plan['sha256'] or state['definition']!=definition:raise ValueError('The receipt belongs to different data or a different schema. Keep the original file and import definition for a retry.')
     else:
