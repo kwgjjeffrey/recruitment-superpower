@@ -40,6 +40,8 @@ export type FieldSchema = {
     removeLabel?: string;
     separator?: string;
     readOnlyWhen?: readonly string[];
+    /** Nullable months may represent unknown dates instead of a current role. */
+    allowPresent?: boolean;
   };
 };
 export type ObjectSchema = FieldSchema & { type: "object"; properties: Readonly<Record<string, FieldSchema>>; required: readonly string[]; additionalProperties: false };
