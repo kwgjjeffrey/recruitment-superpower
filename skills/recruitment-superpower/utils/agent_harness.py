@@ -65,11 +65,14 @@ async def command(args, env=None, timeout=40):
                 await process.wait()
 
 
-def browser_js(source):
+def browser_js(source, tab_id=None):
+    if tab_id is not None and not re.fullmatch(r"\d{1,20}", str(tab_id)):
+        raise ValueError("Invalid sign-in tab")
+    tab_guard = f' and (id of t as text) is "{tab_id}"' if tab_id is not None else ""
     script = f'''tell application "Google Chrome"
 repeat with w in windows
 repeat with t in tabs of w
-if URL of t starts with "{ORIGIN}/" then
+if URL of t starts with "{ORIGIN}/"{tab_guard} then
 return execute t javascript {json.dumps(source)}
 end if
 end repeat
@@ -208,6 +211,13 @@ class MyFlicker:
                     emit("message", message=entry)
             meta = await self.cli_json("session", "meta", sid)
             status = flick_turn_status(meta, turn)
+            if status == "disconnected":
+                # A lost native execution is not a confirmed cancellation or a
+                # reason to replay the user's send. Keep history available and
+                # require a fresh health check before accepting another turn.
+                self.active = False
+                ready("myflicker", True, False, False)
+                raise RuntimeError("MyFlicker disconnected. Reconnect and read the conversation before sending again.")
             if status in {"completed", "failed", "cancelled", "canceled", "stopped", "interrupted"}:
                 # Materialized messages can land just after turn completion.
                 async for row in self.snapshots(sid):
@@ -235,11 +245,19 @@ class MyFlicker:
             raise RuntimeError("MyFlicker did not return its sign-in page.")
         if sys.platform != "darwin":
             raise RuntimeError("Run flick login in your terminal, then reconnect.")
-        await command(["/usr/bin/open", "-a", "Google Chrome", urls[0]])
+        # Track this flow's tab. An older code page or an unrelated workbench
+        # tab must never provide the response for a fresh login request.
+        tab_id = (await command(["/usr/bin/osascript", "-e", f'''tell application "Google Chrome"
+if (count windows) is 0 then make new window
+set t to make new tab at end of tabs of front window with properties {{URL:{json.dumps(urls[0])}}}
+return id of t
+end tell'''])).strip()
+        if not re.fullmatch(r"\d{1,20}", tab_id):
+            raise RuntimeError("MyFlicker could not open its sign-in tab.")
         # Only the official six-digit CLI response is read, never browser cookies.
         for _ in range(600):
             try:
-                body = await browser_js("location.pathname.startsWith('/auth_continue/code')?document.body.innerText:''")
+                body = await browser_js("location.pathname.startsWith('/auth_continue/code')?document.body.innerText:''", tab_id)
                 code = re.search(r"(?<!\d)\d{6}(?!\d)", body)
                 if code:
                     hook = str(HERE / "harness_browser.cjs")
