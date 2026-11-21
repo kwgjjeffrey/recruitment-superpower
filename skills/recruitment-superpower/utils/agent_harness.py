@@ -290,6 +290,13 @@ def flick_message(row):
     if role not in {"user", "assistant", "tool"}:
         return None
     content = row.get("content", "")
+    context = row.get("context") or {}
+    blocks = context.get("content", []) if isinstance(context, dict) else []
+    if role == "assistant" and isinstance(blocks, list) and any(part.get("type") in {"reasoning", "thinking", "redacted_thinking"} for part in blocks if isinstance(part, dict)):
+        # Materialized content flattens reasoning into plain text. Respect the
+        # native typed context instead of exposing it as an assistant answer.
+        parts = [text_part(part["text"]) for part in blocks if isinstance(part, dict) and part.get("type") == "text" and part.get("text")]
+        return message(row["id"], role, parts) if parts else None
     if role == "tool":
         extra = row.get("metadata") or row.get("extra") or {}
         if isinstance(extra, str):
