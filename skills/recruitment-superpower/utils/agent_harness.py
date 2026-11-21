@@ -163,8 +163,9 @@ class MyFlicker:
 
     async def read(self, sid):
         self.check(sid)
+        tools = {}
         async for row in self.snapshots(sid, True):
-            entry = flick_message(row)
+            entry = flick_message(row, tools)
             if entry:
                 emit("historyItem", threadId=sid, message=entry)
         emit("historyDone", threadId=sid)
@@ -199,13 +200,13 @@ class MyFlicker:
         emit("thread", id=sid)
         if self.stopped:
             await self.stop()
-        seen = {}
+        seen, tools = {}, {}
         deadline = time.monotonic() + 1800
         while time.monotonic() < deadline:
             async for row in self.snapshots(sid):
                 if row.get("turnId") != turn or row.get("role") == "user":
                     continue
-                entry = flick_message(row)
+                entry = flick_message(row, tools)
                 if entry and seen.get(entry["id"]) != entry:
                     seen[entry["id"]] = entry
                     emit("message", message=entry)
@@ -221,7 +222,7 @@ class MyFlicker:
             if status in {"completed", "failed", "cancelled", "canceled", "stopped", "interrupted"}:
                 # Materialized messages can land just after turn completion.
                 async for row in self.snapshots(sid):
-                    entry = flick_message(row)
+                    entry = flick_message(row, tools)
                     if row.get("turnId") == turn and row.get("role") != "user" and entry and seen.get(entry["id"]) != entry:
                         emit("message", message=entry)
                 emit("done", status="interrupted" if status in {"cancelled", "canceled", "stopped", "interrupted"} else status)
@@ -285,18 +286,42 @@ def flick_turn_status(meta, turn):
     return ""
 
 
-def flick_message(row):
+def flick_message(row, tools=None):
     role = row.get("role")
     if role not in {"user", "assistant", "tool"}:
         return None
     content = row.get("content", "")
     context = row.get("context") or {}
     blocks = context.get("content", []) if isinstance(context, dict) else []
-    if role == "assistant" and isinstance(blocks, list) and any(part.get("type") in {"reasoning", "thinking", "redacted_thinking"} for part in blocks if isinstance(part, dict)):
+    if role == "assistant" and isinstance(blocks, list) and any(part.get("type") in {"reasoning", "thinking", "redacted_thinking", "tool_call", "tool_result"} for part in blocks if isinstance(part, dict)):
         # Materialized content flattens reasoning into plain text. Respect the
         # native typed context instead of exposing it as an assistant answer.
-        parts = [text_part(part["text"]) for part in blocks if isinstance(part, dict) and part.get("type") == "text" and part.get("text")]
-        return message(row["id"], role, parts) if parts else None
+        tools = {} if tools is None else tools
+        parts, mid = [], row["id"]
+        for part in blocks:
+            if not isinstance(part, dict):
+                continue
+            kind = part.get("type")
+            if kind == "text" and part.get("text"):
+                parts.append(text_part(part["text"]))
+            elif kind in {"tool_call", "tool_result"} and part.get("toolId"):
+                state = tools.setdefault(str(part["toolId"]), {"id": row["id"]})
+                if kind == "tool_call":
+                    args = part.get("arguments") or {}
+                    if isinstance(args, str):
+                        try:
+                            args = json.loads(args)
+                        except ValueError:
+                            args = {"input": args}
+                    state.update(name=part.get("name"), args=args)
+                else:
+                    output = part.get("content", [])
+                    if isinstance(output, list) and all(isinstance(p, dict) and p.get("type") == "text" for p in output):
+                        output = "\n".join(str(p.get("text", "")) for p in output)
+                    state.update(result={"output": output}, failed=bool(part.get("isError")))
+                mid = state["id"]
+                parts.append(tool_part(part["toolId"], state.get("name"), state.get("args"), state.get("result"), state.get("failed", False)))
+        return message(mid, role, parts) if parts else None
     if role == "tool":
         extra = row.get("metadata") or row.get("extra") or {}
         if isinstance(extra, str):
