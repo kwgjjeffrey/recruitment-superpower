@@ -389,6 +389,8 @@ class WorkBuddy:
         self.desktop = None
         self.stream_response = None
         self.stream_closed = False
+        self.stream_active = False
+        self.authenticated = False
 
     async def connect(self):
         bundle = Path("/Applications/WorkBuddy.app/Contents/Resources/app.asar.unpacked/cli")
@@ -438,7 +440,8 @@ class WorkBuddy:
                 info = (await self.rpc("_codebuddy.ai/getUserInfo", {}, 10)).get("userInfo") or {}
                 if not (info.get("accessToken") or info.get("token")):
                     raise RuntimeError("WorkBuddy could not provide its saved sign-in to the ATS runtime. Open a local task in WorkBuddy, then reconnect.")
-            ready("workbuddy", bool(authenticated), self.image_input)
+            self.authenticated = bool(authenticated)
+            ready("workbuddy", self.authenticated, self.image_input)
             return
         raise RuntimeError("WorkBuddy did not start its authenticated local API.")
 
@@ -496,6 +499,11 @@ class WorkBuddy:
                         return
                     if "text/event-stream" not in response.headers.get("Content-Type", ""):
                         raise RuntimeError("WorkBuddy did not return an ACP event stream.")
+                    # The connect/header deadline must not become an idle chat
+                    # deadline. Native ACP sends no heartbeat while the user is
+                    # composing. Disconnect explicitly shuts down this socket.
+                    response.fp.raw._sock.settimeout(None)
+                    self.stream_active = True
                     loop.call_soon_threadsafe(self.desktop["events"].put_nowait, {"streamReady": True})
                     frame, size = [], 0
                     while not self.stream_closed:
@@ -515,6 +523,7 @@ class WorkBuddy:
             except Exception:
                 pass  # Raw transport errors can contain credentials.
             finally:
+                self.stream_active = False
                 if not self.stream_closed:
                     loop.call_soon_threadsafe(self.desktop["events"].put_nowait, None)
         threading.Thread(target=stream, daemon=True).start()
@@ -578,9 +587,14 @@ class WorkBuddy:
                 if not future.done():
                     future.set_exception(RuntimeError("WorkBuddy disconnected. Reconnect and read the session before sending again."))
             self.pending.clear()
+            if self.desktop and not self.stream_closed:
+                ready("workbuddy", self.authenticated, self.image_input, False)
+                emit("notice", message="WorkBuddy connection closed. Reconnect and read the session before sending again.")
 
     async def write(self, payload):
         if self.desktop:
+            if not self.stream_active:
+                raise RuntimeError("WorkBuddy connection closed. Reconnect and read the session before sending again.")
             response = await self.http("/api/v1/acp", "POST", payload)
             for event in response.get("_atsAcpFrames", []):
                 self.desktop["events"].put_nowait(event)
