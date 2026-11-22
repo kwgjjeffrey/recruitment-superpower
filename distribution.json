@@ -1,12 +1,12 @@
 {
-  "bundleVersion": "0.2.63",
-  "sourceCommit": "53a549c71888a2d6c7cdd9e2fc7645cdcb84d548",
-  "manifestUrl": "https://recruitment.zhiyuanwangluo.online/downloads/recruitment-superpower/versions/0.2.63/manifest.json",
-  "skillArchiveSha256": "72ae818a33c37edd66fa25b2ca5d253c5a73a4fe348809323ba13cdf5e81cc16",
-  "skillVersion": "0.2.62",
+  "bundleVersion": "0.2.64",
+  "sourceCommit": "e75e82be56a79fe976aa75e10fb9e59edf7fe6a1",
+  "manifestUrl": "https://recruitment.zhiyuanwangluo.online/downloads/recruitment-superpower/versions/0.2.64/manifest.json",
+  "skillArchiveSha256": "b6a7f2e47cf0aecf174108e8e93441a8a40503b07062735da22bb8a25f0137d6",
+  "skillVersion": "0.2.63",
   "files": {
     "setup.sh": "2f1cf6a910ae6ed509dec069c86859bca75c4b3eeb0e0d5d0ccc27f4ea3c3a8e",
-    "skill-project.json": "79d6c582d2ed02850afcb1664cba0dc2fc5475717cf580e8dbedea0c094193a9",
+    "skill-project.json": "8d9dda5820f7ab7a0a805e6f6657fa3dc30f5a0fda6ebd84befa5365b191d0c8",
     "SKILL.md": "455999702f066c3ef0b481142f3bf7cd8b843576a13c9b64fd1d378e39bc3849",
     "requirements-analysis.txt": "3c1bc818aeb336a9bbc8776e1db86dc1218c17f289d49ec40fc658237c41b07a",
     "setup/SKILL.md": "f96978aea59822b0999a6d3737137be3cba344ae7417c8f859150a9e5c983499",
