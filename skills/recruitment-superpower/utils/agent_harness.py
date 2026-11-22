@@ -4,6 +4,7 @@ Provider runtimes own all conversations. This process holds only connection stat
 no transcript, credential, session index or unrelated desktop history is copied.
 """
 import asyncio
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -12,10 +13,14 @@ import secrets
 import shutil
 import signal
 import socket
+import stat
 import sys
+import tempfile
+import threading
 import time
 import urllib.parse
 import urllib.request
+import uuid
 
 HERE = Path(__file__).resolve().parent
 ORIGIN = "https://myflicker.corp.kuaishou.com"
@@ -90,11 +95,13 @@ class MyFlicker:
         self.cli = os.environ.get("ATS_MYFLICKER_CLI") or next((str(p) for p in [Path("/Applications/MyFlicker.app/Contents/Resources/bin/flick")] if p.is_file()), None) or shutil.which("flick")
         self.env = os.environ.copy()
         self.project = None
+        self.projects = set()
         self.known = set()
         self.current = None
         self.active = False
         self.stopped = False
         self.mode = "native"
+        self.available = False
 
     async def cli_json(self, *args, timeout=45):
         if not self.cli:
@@ -107,6 +114,11 @@ class MyFlicker:
     async def connect(self):
         try:
             groups = await self.cli_json("project", "list", timeout=15)
+            # An AccessProxy HTML response can be mapped to [] by the native
+            # SDK. Local daemon liveness cannot prove cloud authentication.
+            network = await self.cli_json("doctor", "net", timeout=15)
+            if network.get("loggedOut") or network.get("intercepted"):
+                raise RuntimeError("MyFlicker control-plane sign-in is unavailable.")
         except Exception:
             if sys.platform != "darwin" or not self.cli:
                 raise
@@ -118,15 +130,18 @@ class MyFlicker:
             groups = await self.cli_json("project", "list")
             self.mode = "browser"
         self.project = None
+        self.projects = set()
         for group in groups:
             if not group.get("isLocal"):
                 continue
             for project in group.get("projects", []):
                 if any(Path(folder.get("path", "")).absolute() == self.workspace for folder in project.get("folders", [])):
                     self.project = str(project["id"])
+                    self.projects.add(self.project)
         # No registration is needed just to open an empty history list.
         health = await self.cli_json("daemon", "health")
-        available = health.get("status") == "healthy"
+        checks = {item.get("name"): item.get("ok") for item in health.get("checks", [])}
+        available = self.available = health.get("status") == "healthy" and checks.get("ws_connected", True)
         ready("myflicker", True, False, available)
         if not available:
             emit("notice", message="MyFlicker runtime is offline. Open MyFlicker, check its network connection, then reconnect. Conversation history remains available.")
@@ -135,8 +150,15 @@ class MyFlicker:
         if not self.project:
             emit("threads", threads=[])
             return
-        rows = await self.cli_json("session", "list", "--project", self.project)
-        self.known = {str(row["id"]) for row in rows if str(row.get("projectId")) == self.project}
+        # Older ambiguous registration attempts can leave two native projects
+        # for the same ATS folder. Preserve both histories without deleting or
+        # merging provider-owned data.
+        projects = self.projects or {self.project}
+        rows = []
+        for project in sorted(projects):
+            rows.extend(await self.cli_json("session", "list", "--project", project))
+        rows = list({str(row["id"]): row for row in rows if str(row.get("projectId")) in projects}.values())
+        self.known = {str(row["id"]) for row in rows}
         emit("threads", threads=[{"id": str(row["id"]), "title": row.get("title") or "New chat"} for row in rows if str(row["id"]) in self.known and row.get("lifecycle") != "deleted"])
 
     def check(self, sid):
@@ -171,6 +193,8 @@ class MyFlicker:
         emit("historyDone", threadId=sid)
 
     async def send(self, action):
+        if not self.available:
+            raise RuntimeError("MyFlicker runtime is offline. Restore its VPN/network connection, then reconnect. No message was sent.")
         if action.get("images"):
             raise ValueError("MyFlicker does not support image input through this connection.")
         sid = action.get("threadId")
@@ -179,6 +203,7 @@ class MyFlicker:
         if not self.project:
             project = await self.cli_json("project", "add", str(self.workspace), "--name", "ATS Assistant")
             self.project = str(project["id"])
+            self.projects.add(self.project)
         self.active, self.stopped = True, False
         self.current = sid
         # turnConfig.cliEnv is the native runtime's supported environment channel.
@@ -361,6 +386,9 @@ class WorkBuddy:
         self.image_input = False
         self.auth_method = "internal"
         self.workers = []
+        self.desktop = None
+        self.stream_response = None
+        self.stream_closed = False
 
     async def connect(self):
         bundle = Path("/Applications/WorkBuddy.app/Contents/Resources/app.asar.unpacked/cli")
@@ -373,7 +401,7 @@ class WorkBuddy:
         elif (bundle / "bin/codebuddy").is_file():
             node = shutil.which("node")
             if not node:
-                node = "/Applications/WorkBuddy.app/Contents/MacOS/WorkBuddy"
+                node = "/Applications/WorkBuddy.app/Contents/MacOS/Electron"
                 env["ELECTRON_RUN_AS_NODE"] = "1"
             launch = [node, str(bundle / "bin/codebuddy")]
             env.update(CODEBUDDY_FORCE_LITE_WB_BUNDLE="1", ACC_PRODUCT_CONFIG_PATH=str(bundle / "product.json"), CODEBUDDY_CONFIG_DIR=str(Path.home() / ".workbuddy"))
@@ -383,8 +411,14 @@ class WorkBuddy:
             listener.bind(("127.0.0.1", 0))
             self.port = listener.getsockname()[1]
         args = [*launch, "--serve", "--acp", "--port", str(self.port), "--host", "127.0.0.1", "--auth", "password", "--permission-mode", "dontAsk", "--strict-mcp-config", "--mcp-config", '{"mcpServers":{}}', "--tools", "", "--allowedTools", "mcp__ats__search_assets,mcp__ats__view_asset,mcp__ats__execute", "--append-system-prompt", instructions()]
-        self.process = await asyncio.create_subprocess_exec(*args, cwd=self.workspace, env=env, stdin=asyncio.subprocess.PIPE, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE, start_new_session=True, limit=40 * 1024 * 1024)
-        self.workers = [asyncio.create_task(self.reader()), asyncio.create_task(self.drain_errors())]
+        if not executable:
+            # Recent desktop releases encrypt credentials and provide keys only
+            # to desktop-managed children. Never spawn a keyless copy or ask it
+            # to authenticate: its authenticate method logs out the desktop.
+            await self.start_desktop(bundle, args[len(launch):], env)
+        else:
+            self.process = await asyncio.create_subprocess_exec(*args, cwd=self.workspace, env=env, stdin=asyncio.subprocess.PIPE, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE, start_new_session=True, limit=40 * 1024 * 1024)
+            self.workers = [asyncio.create_task(self.reader()), asyncio.create_task(self.drain_errors())]
         init = await self.rpc("initialize", {"protocolVersion": 1, "clientInfo": {"name": "ats_workspace", "version": "1"}, "clientCapabilities": {"fs": {"readTextFile": False, "writeTextFile": False}, "terminal": False}}, 30)
         self.image_input = init.get("agentCapabilities", {}).get("promptCapabilities", {}).get("image", False)
         methods = init.get("authMethods", [])
@@ -393,15 +427,118 @@ class WorkBuddy:
         for _ in range(60):
             try:
                 status = await self.http("/api/v1/auth/account/status")
-                data = status.get("data", status)
-                authenticated = data.get("authenticated", data.get("isAuthenticated", False))
-                ready("workbuddy", bool(authenticated), self.image_input)
-                return
             except Exception:
-                if self.process.returncode is not None:
+                if self.process and self.process.returncode is not None:
                     break
                 await asyncio.sleep(.25)
+                continue
+            data = status.get("data", status)
+            authenticated = data.get("authenticated", data.get("isAuthenticated", False))
+            if self.desktop and authenticated:
+                info = (await self.rpc("_codebuddy.ai/getUserInfo", {}, 10)).get("userInfo") or {}
+                if not (info.get("accessToken") or info.get("token")):
+                    raise RuntimeError("WorkBuddy could not provide its saved sign-in to the ATS runtime. Open a local task in WorkBuddy, then reconnect.")
+            ready("workbuddy", bool(authenticated), self.image_input)
+            return
         raise RuntimeError("WorkBuddy did not start its authenticated local API.")
+
+    async def start_desktop(self, bundle, args, env):
+        config = Path.home() / ".workbuddy"
+        uid = os.getuid()
+        root = Path(tempfile.gettempdir()) / ("wb-" + hashlib.sha1(str(uid).encode()).hexdigest()[:6]) / hashlib.sha1(str(config).encode()).hexdigest()[:12]
+        def owned(path, kind):
+            item = path.lstat()
+            if item.st_uid != uid or not kind(item.st_mode) or item.st_mode & 0o022:
+                raise RuntimeError("WorkBuddy task service ownership could not be verified.")
+        try:
+            owned(root, stat.S_ISDIR)
+            metadata = root / "sidecar.pid"
+            owned(metadata, stat.S_ISREG)
+            if metadata.stat().st_size > 65536:
+                raise RuntimeError("WorkBuddy task service metadata is too large.")
+            identity = json.loads(metadata.read_text())
+            pipe = identity.get("controlPipeUuid", "")
+            if identity.get("version") != 6 or not re.fullmatch(r"[a-f0-9]{8}", pipe):
+                raise RuntimeError("Update the ATS adapter for this WorkBuddy task service version.")
+            os.kill(int(identity["pid"]), 0)
+            address = root / ("sidecar-" + pipe + ".sock")
+            owned(address, stat.S_ISSOCK)
+            reader, writer = await asyncio.open_unix_connection(str(address), limit=4 * 1024 * 1024)
+        except (FileNotFoundError, ProcessLookupError):
+            raise RuntimeError("Open a local task in the signed-in WorkBuddy desktop, then reconnect. Its task service must provide the saved sign-in; signing in again in ATS will not fix a missing credential channel.") from None
+        self.desktop = {"reader": reader, "writer": writer, "serial": 0, "id": "ats-" + str(uuid.uuid4()), "runtime": None}
+        # Keep the gateway credential unique to this owned child. No desktop
+        # token, keyblob or existing gateway password is extracted or copied.
+        child_env = {key: env[key] for key in ["CODEBUDDY_GATEWAY_PASSWORD", "CODEBUDDY_FORCE_LITE_WB_BUNDLE", "ACC_PRODUCT_CONFIG_PATH", "CODEBUDDY_CONFIG_DIR"]}
+        child_env.update(ELECTRON_RUN_AS_NODE="1", WORKBUDDY_CONFIG_DIR=str(config), CODEBUDDY_GATEWAY_AUTH="password", DISABLE_AUTOUPDATER="1")
+        # The native task service chooses the port and installs the encryption
+        # bootstrap. It owns only this UUID worker; existing tasks are untouched.
+        args = list(args)
+        port_index = args.index("--port")
+        del args[port_index:port_index + 2]
+        result = await self.sidecar_rpc("session.create", {"sessionId": self.desktop["id"], "command": "/Applications/WorkBuddy.app/Contents/MacOS/Electron", "args": [str(bundle / "bin/codebuddy"), *args], "cwd": str(self.workspace), "port": 0, "env": child_env}, 180)
+        self.desktop["runtime"] = result.get("runtimeId")
+        self.desktop["pid"] = result.get("pid")
+        endpoint = urllib.parse.urlsplit(result.get("acpEndpoint", ""))
+        if result.get("sessionId") != self.desktop["id"] or not self.desktop["runtime"] or endpoint.scheme != "http" or endpoint.hostname != "127.0.0.1" or not endpoint.port or endpoint.path != "/api/v1/acp" or endpoint.username or endpoint.password or endpoint.query or endpoint.fragment:
+            raise RuntimeError("WorkBuddy returned an invalid owned runtime endpoint.")
+        self.port = endpoint.port
+        connection = await self.http("/api/v1/acp/connect", "POST", {})
+        if not all(isinstance(connection.get(k), str) and connection[k] and not re.search(r"[\r\n]", connection[k]) for k in ["connectionId", "sessionToken"]):
+            raise RuntimeError("WorkBuddy returned invalid ACP connection credentials.")
+        self.desktop.update(connection=connection, events=asyncio.Queue())
+        loop = asyncio.get_running_loop()
+        def stream():
+            try:
+                with self.http_open("/api/v1/acp", accept="text/event-stream", timeout=30) as response:
+                    self.stream_response = response
+                    if self.stream_closed:
+                        return
+                    if "text/event-stream" not in response.headers.get("Content-Type", ""):
+                        raise RuntimeError("WorkBuddy did not return an ACP event stream.")
+                    loop.call_soon_threadsafe(self.desktop["events"].put_nowait, {"streamReady": True})
+                    frame, size = [], 0
+                    while not self.stream_closed:
+                        raw = response.readline(4 * 1024 * 1024 + 1)
+                        if not raw:
+                            break
+                        size += len(raw)
+                        if size > 4 * 1024 * 1024:
+                            raise RuntimeError("WorkBuddy ACP event is too large.")
+                        line = raw.decode().rstrip("\r\n")
+                        if line.startswith("data:"):
+                            frame.append(line[5:].lstrip(" "))
+                        elif not line:
+                            if frame:
+                                loop.call_soon_threadsafe(self.desktop["events"].put_nowait, json.loads("\n".join(frame)))
+                            frame, size = [], 0
+            except Exception:
+                pass  # Raw transport errors can contain credentials.
+            finally:
+                if not self.stream_closed:
+                    loop.call_soon_threadsafe(self.desktop["events"].put_nowait, None)
+        threading.Thread(target=stream, daemon=True).start()
+        first = await asyncio.wait_for(self.desktop["events"].get(), 35)
+        if not first or not first.get("streamReady"):
+            raise RuntimeError("WorkBuddy ACP event stream could not connect.")
+        self.workers = [asyncio.create_task(self.reader())]
+
+    async def sidecar_rpc(self, method, params, timeout=10):
+        desktop = self.desktop
+        desktop["serial"] += 1
+        rid = desktop["serial"]
+        desktop["writer"].write((json.dumps({"jsonrpc": "2.0", "id": rid, "method": method, "params": params}) + "\n").encode())
+        await desktop["writer"].drain()
+        deadline = time.monotonic() + timeout
+        while True:
+            raw = await asyncio.wait_for(desktop["reader"].readline(), max(.01, deadline - time.monotonic()))
+            if not raw:
+                raise RuntimeError("WorkBuddy task service disconnected.")
+            event = json.loads(raw)
+            if event.get("id") == rid and "method" not in event:
+                if "error" in event:
+                    raise RuntimeError("WorkBuddy task service rejected the owned runtime request.")
+                return event.get("result", {})
 
     async def drain_errors(self):
         # Drain bounded chunks. Never expose the runtime's random gateway secret.
@@ -410,7 +547,16 @@ class WorkBuddy:
 
     async def reader(self):
         try:
-            while raw := await self.process.stdout.readline():
+            while True:
+                if self.desktop:
+                    event = await self.desktop["events"].get()
+                    if event is None:
+                        break
+                    raw = json.dumps(event)
+                else:
+                    raw = await self.process.stdout.readline()
+                    if not raw:
+                        break
                 try:
                     event = json.loads(raw)
                 except ValueError:
@@ -424,7 +570,9 @@ class WorkBuddy:
                         if params.get("sessionId") == self.current:
                             self.update(params.get("update", {}))
                 elif event.get("id") in self.pending:
-                    self.pending.pop(event["id"]).set_result(event)
+                    future = self.pending.pop(event["id"])
+                    if not future.done():
+                        future.set_result(event)
         finally:
             for future in self.pending.values():
                 if not future.done():
@@ -432,6 +580,11 @@ class WorkBuddy:
             self.pending.clear()
 
     async def write(self, payload):
+        if self.desktop:
+            response = await self.http("/api/v1/acp", "POST", payload)
+            for event in response.get("_atsAcpFrames", []):
+                self.desktop["events"].put_nowait(event)
+            return
         self.process.stdin.write((json.dumps(payload) + "\n").encode())
         await self.process.stdin.drain()
 
@@ -440,8 +593,8 @@ class WorkBuddy:
         rid = self.serial
         future = asyncio.get_running_loop().create_future()
         self.pending[rid] = future
-        await self.write({"jsonrpc": "2.0", "id": rid, "method": method, "params": params})
         try:
+            await self.write({"jsonrpc": "2.0", "id": rid, "method": method, "params": params})
             event = await asyncio.wait_for(future, timeout)
         finally:
             self.pending.pop(rid, None)
@@ -449,12 +602,54 @@ class WorkBuddy:
             raise RuntimeError(str(event["error"].get("message", "WorkBuddy request failed")))
         return event.get("result", {})
 
-    async def http(self, path):
+    def http_open(self, path, method="GET", body=None, accept="application/json", timeout=10):
+        if path == "/api/v1/acp" and method == "POST":
+            accept = "application/json, text/event-stream"
+        headers = {"Authorization": "Bearer " + self.secret, "X-CodeBuddy-Request": "1", "Accept": accept}
+        if self.desktop and self.desktop.get("connection") and path == "/api/v1/acp":
+            connection = self.desktop["connection"]
+            headers.update({"acp-connection-id": connection["connectionId"], "acp-session-token": connection["sessionToken"]})
+        if body is not None:
+            headers["Content-Type"] = "application/json"
+        req = urllib.request.Request(f"http://127.0.0.1:{self.port}" + path, headers=headers, method=method, data=json.dumps(body).encode() if body is not None else None)
+        opener = urllib.request.build_opener(urllib.request.ProxyHandler({}))
+        return opener.open(req, timeout=timeout)
+
+    async def http(self, path, method="GET", body=None):
+        loop = asyncio.get_running_loop()
         def get():
-            req = urllib.request.Request(f"http://127.0.0.1:{self.port}" + path, headers={"Authorization": "Bearer " + self.secret, "X-CodeBuddy-Request": "1"})
-            opener = urllib.request.build_opener(urllib.request.ProxyHandler({}))
-            with opener.open(req, timeout=8) as response:
-                return json.load(response)
+            timeout = 1800 if path == "/api/v1/acp" and method == "POST" and body and body.get("method") == "session/prompt" else 40
+            with self.http_open(path, method, body, timeout=timeout) as response:
+                if "text/event-stream" in response.headers.get("Content-Type", ""):
+                    frame, size = [], 0
+                    while True:
+                        raw = response.readline(4 * 1024 * 1024 + 1)
+                        if not raw:
+                            break
+                        size += len(raw)
+                        if size > 4 * 1024 * 1024:
+                            raise RuntimeError("WorkBuddy ACP event is too large.")
+                        line = raw.decode().rstrip("\r\n")
+                        if line.startswith("data:"):
+                            frame.append(line[5:].lstrip(" "))
+                        elif not line:
+                            if frame:
+                                event = json.loads("\n".join(frame))
+                                if not self.stream_closed:
+                                    loop.call_soon_threadsafe(self.desktop["events"].put_nowait, event)
+                            frame, size = [], 0
+                    if frame:
+                        raise RuntimeError("WorkBuddy returned an incomplete ACP event.")
+                    return {}
+                data = response.read(4 * 1024 * 1024 + 1)
+                if len(data) > 4 * 1024 * 1024:
+                    raise RuntimeError("WorkBuddy response is too large.")
+                if response.status in {202, 204}:
+                    return {}
+                if path == "/api/v1/acp" and method == "POST":
+                    value = json.loads(data) if data else {}
+                    return {"_atsAcpFrames": [value]} if value.get("jsonrpc") else {}
+                return json.loads(data) if data else {}
         return await asyncio.to_thread(get)
 
     async def list(self):
@@ -555,12 +750,46 @@ class WorkBuddy:
             await self.write({"jsonrpc": "2.0", "method": "session/cancel", "params": {"sessionId": self.current}})
 
     async def authenticate(self):
+        if self.desktop:
+            raise RuntimeError("Use the WorkBuddy desktop account menu to sign in, then reconnect. ATS preserves your existing WorkBuddy sign-in.")
         emit("authenticating")
         await self.rpc("authenticate", {"methodId": self.auth_method}, 1800)
         ready("workbuddy", True, self.image_input)
         await self.list()
 
     async def close(self):
+        if self.desktop and self.desktop.get("closed"):
+            return
+        self.stream_closed = True
+        if self.stream_response:
+            try:
+                self.stream_response.fp.raw._sock.shutdown(socket.SHUT_RDWR)
+            except (AttributeError, OSError):
+                pass
+        if self.desktop:
+            try:
+                if self.desktop.get("connection"):
+                    try:
+                        await self.http("/api/v1/acp", "DELETE")
+                    except Exception:
+                        pass  # A disconnected ACP channel must not skip worker cleanup.
+                await self.sidecar_rpc("session.kill", {"sessionId": self.desktop["id"], **({"expectedRuntimeId": self.desktop["runtime"]} if self.desktop.get("runtime") else {})})
+                pid = self.desktop.get("pid")
+                if isinstance(pid, int) and pid > 0:
+                    for _ in range(100):
+                        try:
+                            os.kill(pid, 0)
+                        except ProcessLookupError:
+                            break
+                        await asyncio.sleep(.05)
+                    else:
+                        raise RuntimeError("WorkBuddy has not confirmed its owned ATS runtime stopped.")
+            finally:
+                self.desktop["closed"] = True
+                for task in self.workers:
+                    task.cancel()
+                self.desktop["writer"].close()
+                await self.desktop["writer"].wait_closed()
         for task in self.workers:
             task.cancel()
         if self.process and self.process.returncode is None:
