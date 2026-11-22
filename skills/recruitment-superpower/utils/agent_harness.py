@@ -676,7 +676,10 @@ class WorkBuddy:
 
     def mcp(self):
         env = [{"name": key, "value": os.environ[key]} for key in ["ATS_PAGE_BRIDGE", "RECRUITMENT_HOME", "RECRUITMENT_SKILL_DIR", "RECRUITMENT_PYTHON"] if key in os.environ]
-        return [{"name": "ats", "command": sys.executable, "args": [str(HERE / "harness_mcp.py")], "env": env}]
+        # The desktop defaults MCP tools to deferred discovery. With host tools
+        # (including ToolSearch) disabled, these three broker-checked tools must
+        # be present inline rather than waiting for an unavailable search tool.
+        return [{"name": "ats", "command": sys.executable, "args": [str(HERE / "harness_mcp.py")], "env": env, "_meta": {"defer_loading": False}}]
 
     def reset_messages(self):
         self.entry, self.parts, self.tools = None, [], {}
