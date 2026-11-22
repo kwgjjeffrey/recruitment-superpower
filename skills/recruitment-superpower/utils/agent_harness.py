@@ -106,10 +106,24 @@ class MyFlicker:
     async def cli_json(self, *args, timeout=45):
         if not self.cli:
             raise RuntimeError("Install MyFlicker Desktop or the flick CLI, then reconnect.")
-        try:
-            return json.loads(await command([self.cli, *args, "--json"], env=self.env, timeout=timeout))
-        except (ValueError, RuntimeError):
-            raise RuntimeError("MyFlicker could not complete the request. Check sign-in and daemon health; check the session before repeating a send.") from None
+        # Native reads can fail transiently after a send was already committed.
+        # Retry only these exact read commands, on the selected transport. A send,
+        # stop, registration or authentication request must never be replayed.
+        read_commands = {("project", "list"), ("session", "list"),
+                         ("session", "messages"), ("session", "meta"),
+                         ("daemon", "health"), ("doctor", "net")}
+        attempts = 3 if tuple(args[:2]) in read_commands else 1
+        for attempt in range(attempts):
+            try:
+                return json.loads(await command([self.cli, *args, "--json"], env=self.env, timeout=timeout))
+            except (ValueError, RuntimeError, asyncio.TimeoutError):
+                if attempt + 1 < attempts:
+                    await asyncio.sleep(0.5 * (attempt + 1))
+                    continue
+                stage = {("session", "messages"): "load conversation history",
+                         ("session", "meta"): "check the reply status",
+                         ("session", "send"): "send the message"}.get(tuple(args[:2]), "complete the request")
+                raise RuntimeError(f"MyFlicker could not {stage}. Reconnect and check the conversation before sending again.") from None
 
     async def connect(self):
         try:
@@ -214,9 +228,8 @@ class MyFlicker:
         instruction_file = self.workspace / "AGENTS.md"
         instruction_file.write_text(instructions())
         instruction_file.chmod(0o600)
-        args = ["session", "send", action["text"], "--project", self.project, "--permission", "default", "--turn-config", json.dumps({"cliEnv": cli_env})]
-        if sid:
-            args.extend(["--session", sid])
+        target = ["--session", sid] if sid else ["--project", self.project]
+        args = ["session", "send", action["text"], *target, "--permission", "default", "--turn-config", json.dumps({"cliEnv": cli_env})]
         result = await self.cli_json(*args, timeout=70)
         sid = identifier(str(result["sessionId"]))
         turn = result["turnId"]
